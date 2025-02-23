@@ -1,0 +1,212 @@
+# Title: Ranma ½ - Book 1, Part 1
+# ISBN: 4-09-122031-2
+# Word list by: denzil@lunaen.com
+
+# This work is licensed under CC BY-SA 4.0 
+# https://creativecommons.org/licenses/by-sa/4.0/
+ 
+# page 5
+郵便
+前略
+連れて行く 
+中国
+来る
+日
+どんなに
+待つ
+
+# page 8
+# commenting out the tendou, because I'm not sure which is the correct meaning
+# 天道
+道場
+何
+お父さん 
+
+# page 9
+只今 - usually kana
+
+# page 10
+# 破 - kanji only, meaning unclear
+調子
+良い
+又
+んな 
+事 - usually kana
+ばっか 
+遣る - usually kana
+から
+正面に - usually kana
+モテない
+余計
+お世話
+私 - あたし
+お姉ちゃん 
+違う
+男
+なんか 
+大嫌い
+此の - usually kana
+話
+貴方 - usually kana
+にゃ 
+関係
+
+# page 11
+許嫁
+うん - yeah
+親友
+息子
+君 - ~kun
+と言う 
+お前たち 
+人 - counter for people
+誰
+将来
+彼
+結婚
+道場
+継ぐ
+呉れる
+我が
+家
+安泰
+一寸 - usually kana
+勝手 - selfishnes
+決める 
+やだ 
+そう言う 
+会う
+もう直ぐ 
+
+# page 13
+手前 - usually kana
+いい加減にしろ 
+
+# page 14
+来る
+大体
+最初
+から - from
+気が進まない 
+勝手
+許嫁
+
+# page 15
+決める 
+もう一度 
+中国
+行く 
+一生
+
+# page 17
+親子
+武者修行
+旅
+出る
+最近
+渡る
+強い
+限る
+幾つ
+年下
+どんな
+知る
+会う
+
+
+# page 18
+話せる
+馬鹿野郎 - usually kana
+お客様
+待ちかねる
+年上
+だけど
+ほら
+怯える
+
+# page 19
+此れ - usually kana
+お父さん
+友達
+不自然
+君 - きみ - familiar you
+若しや - usually kana
+すいません
+
+# page 20
+そうか
+可愛い - usually kana
+来る
+止める
+女の子
+
+# page 21
+余程 - usually kana
+がっかり
+此方
+許嫁
+折角
+いけない
+確かめる
+息子
+下さい
+
+# page 22
+道場
+見に行く
+仲良く
+拳法
+少し
+手合わせ
+軽い
+大丈夫
+出す
+本当
+
+# page 24
+どうしたの
+打つ
+当たる
+見切る
+
+# page 26
+結構
+女の子
+男の子
+絶対
+負ける
+
+# page 27
+おっちゃん
+誰
+さあ - meaning: not sure
+風呂
+駄目 - usually kana
+たっぷり
+運動
+汗
+汗をかく
+
+# page 28
+冷たい
+沸く
+
+# page 29
+何れ - sooner or later
+ばれる - come out (secret)
+この儘
+
+# page 33
+重い
+風呂桶
+底
+沈める
+抱える
+痴漢
+入る
+素手
+叩く
+召す - to call, I think
+怖い
+出来る
+可笑しい

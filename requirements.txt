@@ -1,0 +1,28 @@
+fastapi[standard]
+fastapi-cors
+sqlalchemy
+alembic
+pydantic>=2.9,<3
+
+# srs scheduler for spaced repetition
+fsrs>=5,<6
+# TODO: the rust optimizer fails to install
+#  and the python requires older version of python
+# starting point: https://github.com/open-spaced-repetition/awesome-fsrs
+# fsrs-rs-python
+
+# for development
+mypy
+black
+ruff
+
+# for documentation
+# hoping to use sphinx for gaku python package documentation
+# sphinx
+# myst-parser
+
+# user documentation is using https://www.mkdocs.org
+mkdocs
+
+# For testing
+pytest

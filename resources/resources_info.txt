@@ -1,0 +1,20 @@
+The resources are from the following sources:
+
+
+# Radicals
+https://github.com/sylhare/kanji
+License: See repo, multiple licenses
+For our use, mostly mix of CC Attribution 3.0 and 4.0
+Needed file: kanji-radicals.csv
+
+Kanji, vocabulary:
+JMdict project
+https://www.edrdg.org/~smg/
+License: https://www.edrdg.org/edrdg/licence.html
+Needed files:
+- JMdict_e.xml - from JMdict
+- kanjidic2.xml - from Kanjidic2
+
+# (Unused for now,  planned for future) Onomatopeia:
+https://github.com/ObakeConstructs/j-ono-data
+License: MIT License

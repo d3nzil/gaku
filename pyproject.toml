@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="gaku"
+description = "Japanese learning tool"
+authors= [
+    {name="Lukáš 'denzil' Frolka", email="denzil@lunaen.com"},
+]
+dynamic = ["version"]
+dependencies = [
+    "sqlalchemy>=2",
+]
+requires-python = ">= 3.9"
+
+[tool.mypy]
+exclude = ["build", "venv*", "node_modules"]
+plugins = ["pydantic.mypy"]
+
+follow_imports = "silent"
+disallow_untyped_defs = true
+
+[tool.pydantic-mypy]
+init_typed = true
+
+[tool.ruff.lint]
+select=["D"]
+ignore=[
+    "D401",
+    "D202",  # I think separating docsting and code by empty line improves readability
+    "D205",  # Buggy rule, cannot distinguish multiline summary from single line
+    ]
+[tool.ruff.pydocstyle]
+convention = "numpy"

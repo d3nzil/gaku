@@ -1,0 +1,58 @@
+body {
+  /* light */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--link-color);
+}
+
+a:link,
+a:visited,
+a:focus {
+  color: var(--visited-link);
+}
+
+a:active {
+  color: var(--active-link);
+}
+
+input,
+textarea,
+select,
+button {
+  color: var(--text-color);
+  background-color: var(--input-bg);
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  color: var(--text-color);
+  background-color: var(--input-bg-focus);
+  outline: none;
+}
+
+/* react-select ignores the background color so force black text. */
+/* Why it follows one color settings and not the other, I have no idea. */
+/* And the manual for it isn't helpful as it seems to require a whole
+lot of code for such simple settings. 
+As a bonus, it obeys the background color when not used as multiselect,
+so I have to reset it to white. */
+
+/* TODO: Wrap the react-select and make it obey the theme colors. */
+.react-select {
+  color: #000;
+  background-color: #FFF;
+}
+
+.correct-answer {
+  background-color: var(--correct-answer-bg);
+}
+
+.incorrect-answer {
+  background-color: var(--incorrect-answer-bg);
+}
