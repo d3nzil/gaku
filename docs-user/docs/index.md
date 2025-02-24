@@ -137,13 +137,18 @@ Under the status will be one of the questions and one or more text inputs. Above
 
 When writing down answer, multiple answers can be written in one field (e.g. when kanji has multiple On readings). All you need to do is to separate each answer by writing coma. Both English and Japanese comas are accepted. Once you write your answer in the field, pressing Enter key will move to the next answer input, or if it was the last one, it will check if the answer is correct.
 
-In case you made typo, or mistake, you can just edit the answer and either click the Re-check button or keep pressing Enter key until it is checked by leaving the last answer input. There is also button to force marking the answer as correct and button to get next question. The next question can be also loaded by pressing Enter key again after the answer is checked.
+In case you made typo, or mistake, you can just edit the answer and either click the Re-check button or keep pressing Enter key until it is checked by leaving the last answer input. There is also button to force marking the answer as correct and button to get next question. The next question can be also loaded by pressing Enter key again after the answer is checked. Also, after mistake the correct answers for the question are displayed, with **bold** meaning this answer is required. The answers in normal font are optional, but always at least one of them is needed.
 
-In case the answer was incorrect, it will be displayed again and this will repeat until you answer correctly. This is done to ensure you know how to answer the card. In future it will be possible to disable this behavior. Also for any mistake, 2 correct answers in row are required (not counting the one right after mistake). I did it this way, because I noticed that when learning elsewhere, I keep repeating the same mistake and then correcting it. Requiring 2 answers in a row hopefully will help remember me the correct answer by seeing the correct more often than the wrong one.
+Another thing to note after incorrect answer is that the same question will be displayed again and this will repeat until you answer correctly. This is done to ensure you know how to answer the card. In future it will be possible to disable this behavior. Also after any mistake, 2 correct answers for this specific question are then needed (not counting the one right after mistake). I did it this way, because I noticed that when learning elsewhere, I keep repeating the same mistake and then correcting it. Requiring 2 answers in a row hopefully will help remember me the correct answer by seeing the correct more often than the wrong one.
 
-In canse of correct answer, there will be button to mark the answer as incorrect (e.g in case you mistaken one kanji for another with same reading).
+AFter correct answer, there will be button to mark the answer as incorrect (e.g in case you mistaken one kanji for another with same reading).
 
-Finally there is `Show Card Info` button, that will display the currently tested card, so you can check or review it.
+Then there is `Show Card Info` button, that will display the currently tested card, so you can check or review it.
+
+Finally there are few keyboard shortcuts:
+- `F2` will toggle hint on and off
+- `F3` will show and hide the correct answer (only after current answer is checked)
+- `F4` will show and hid the card for this question
 
 ### Few notes about testing and writing answers
 The spaced repetition is only updated during testing when:

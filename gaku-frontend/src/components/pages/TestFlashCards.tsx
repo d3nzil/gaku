@@ -338,7 +338,7 @@ const TestFlashcards = () => {
                             {showAnswer && (
                                 <div style={{ border: "1px" }} lang='ja'>
                                     <div style={{ padding: "0.2em", border: "1px solid #888", width: "100%" }}>
-                                        Correct answers:
+                                        Correct answers (required answers and in <b>bold</b>):
                                         {currentQuestion.answers.map((answer_group) => {
                                             return (
                                                 <div>
