@@ -1,0 +1,67 @@
+# Title: Frieren - Book 1, Chapter 1
+# ISBN: 978-4-09-850180-9
+# Word list by: denzil@lunaen.com
+
+# This work is licensed under CC BY-SA 4.0
+# https://creativecommons.org/licenses/by-sa/4.0/
+
+
+# Title and table of contents
+葬送
+第
+話
+冒険
+終わり
+僧侶
+嘘
+# 蒼月草 - could not find in dictionary
+魔法使い
+隠し事
+人
+殺す
+魔法
+新年
+際
+魂
+眠る
+地
+
+# page 3　- panel 1
+王都
+見る
+私達
+勇者
+一行　- party
+凱旋
+盛り上がる
+
+# panel 2
+帰る
+仕事
+探す
+もう
+そんな
+事
+考える
+
+# panel 3
+大事
+魔王
+倒す
+この先
+人生
+長い
+
+# panel 4
+酒
+飲む
+お前
+僧侶
+
+# panel 5
+君
+先
+僕たち
+想像
+
+# TODO rest
