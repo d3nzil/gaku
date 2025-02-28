@@ -64,4 +64,93 @@
 僕たち
 想像
 
+# page 7
+勇者
+戦士
+僧侶
+
+# bottom panel
+善くぞ
+魔王
+打ち倒す
+世界
+平和
+時代
+訪れる - to arrive
+
+# page 8, panel 1
+王様
+広場
+彫像
+作る
+
+# panel 2
+イケメン
+僕
+忠実
+再現
+甚だ
+疑問
+現金
+旅立ち
+時
+銅貨
+枚
+しか - no more than
+呉れる
+癖に - usually kana
+
+# panel 3
+斯うして - usually kana
+タダ酒
+飲む
+
+# panel 4
+生臭坊主
+
+# page 9
+終わる
+年
+色々
+
+# page 10, panel 1
+旅立ち
+日
+王様
+タメ口をきく
+処刑
+靴
+舐める
+言う
+下手
+
+# panel 2
+二日酔い
+役に立つ
+アンデッド
+顔色
+大丈夫
+駄目
+週
+一度
+斯う
+
+# panel 3
+点　- てん, point
+私
+優秀
+
+# panel 4
+ミミック
+食わる
+置いて行く
+終わる
+暗い
+怖い
+エルフ
+# not sure about the next one
+散々
+罠
+まじ
+
 # TODO rest
