@@ -98,7 +98,7 @@ class CardSourceLinkRequest(BaseModel):
 # - delete card
 # - save cards to file
 @app.get("/cards")
-async def get_cards() -> list[TestCardTypes | MultiCard]:
+async def get_cards() -> list[TestCardTypes]:
     """Get all cards.
     Most recent cards are returned first.
     """
@@ -161,7 +161,7 @@ async def delete_card(card: BaseCard) -> dict:
 
 
 @app.post("/cards/get_by_text")
-async def get_cards_by_text(filter: CardFilter) -> list[TestCardTypes | MultiCard]:
+async def get_cards_by_text(filter: CardFilter) -> list[TestCardTypes]:
     """Get cards by text."""
     logging.info(f"Getting cards with filter: {filter}")
     cards = manager.db.get_cards_by_text(filter=filter)

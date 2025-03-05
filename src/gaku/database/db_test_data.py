@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Sequence
 from pathlib import Path
 
 from sqlalchemy import (
@@ -452,7 +452,7 @@ class TestEntryManager(DbManagerBase):
             ).delete()
             session.commit()
 
-    def add_cards(self, cards: list[card_types.TestCardTypes]) -> None:
+    def add_cards(self, cards: Sequence[card_types.TestCardTypes]) -> None:
         """Batch inserts cards into the database."""
         with Session(self.engine) as session:
             highest_position = self.get_card_highest_position() + 1
@@ -465,6 +465,9 @@ class TestEntryManager(DbManagerBase):
                 elif isinstance(card, card_types.RadicalCard):
                     key = card.writing
                 elif isinstance(card, card_types.QuestionCard):
+                    key = card.writing
+                elif isinstance(card, card_types.MultiCard):
+                    card.update_writing()
                     key = card.writing
                 else:
                     raise ValueError(f"Card type {type(card)} not supported")

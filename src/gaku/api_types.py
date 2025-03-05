@@ -10,6 +10,9 @@ from .card_types import (
     CardType,
     TestQuestion,
     MultiCard,
+    VocabCard,
+    KanjiCard,
+    RadicalCard,
 )
 
 
@@ -18,7 +21,7 @@ class AnswerResponseMessage(BaseModel):
 
     correct_answer: bool
     next_question: Optional[TestQuestion] = None
-    test_card: Optional[TestCardTypes | MultiCard] = None
+    test_card: Optional[TestCardTypes] = None
 
 
 class NextCardMessage(BaseModel):
@@ -26,13 +29,13 @@ class NextCardMessage(BaseModel):
 
     Attributes
     ----------
-    test_card : Optional[TestCardTypes | MultiCard]
+    test_card : Optional[TestCardTypes]
         Test card, None if there are no more cards.
     next_question : Optional[TestQuestion]
         The question to display, None if there are no more questions.
     """
 
-    test_card: Optional[TestCardTypes | MultiCard] = None
+    test_card: Optional[TestCardTypes] = None
     next_question: Optional[TestQuestion] = None
 
 
@@ -111,7 +114,9 @@ class GeneratedImports(BaseModel):
     # list of generated items ids in order
     import_items: list[ImportItem] = Field(default_factory=list)
     # generated test cards - key is the card id
-    generated_cards: dict[str, TestCardTypes] = Field(default_factory=dict)
+    generated_cards: dict[str, VocabCard | KanjiCard | RadicalCard] = Field(
+        default_factory=dict
+    )
     # list of ids of new cards (not yet in the database)
     new_card_ids: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)

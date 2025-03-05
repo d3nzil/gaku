@@ -144,7 +144,7 @@ class TestSession(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     db: ExcludedField[DbManager]
-    test_cards: dict[str, TestCardTypes | MultiCard] = {}
+    test_cards: dict[str, TestCardTypes] = {}
     remaining_questions: list[TestQuestion] = []
     current_question_set: list[TestQuestion] = []
     current_question: Optional[TestQuestion] = None
@@ -165,7 +165,7 @@ class TestSession(BaseModel):
     # configuration
     shuffle_questions: bool = True
 
-    def load(self, card_data: list[TestCardTypes | MultiCard]) -> None:
+    def load(self, card_data: list[TestCardTypes]) -> None:
         """Load cards from JSON data.
 
         Parameters
@@ -217,7 +217,7 @@ class TestSession(BaseModel):
             raise ValueError("Session is not finished")
 
         # get cards with mistakes
-        cards_with_mistakes: list[TestCardTypes | MultiCard] = [
+        cards_with_mistakes: list[TestCardTypes] = [
             card
             for card in self.test_cards.values()
             if self.question_card_data[card.card_id].num_mistakes > 0

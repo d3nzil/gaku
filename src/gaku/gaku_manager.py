@@ -116,7 +116,7 @@ class GakuManager:
             )
         return None
 
-    def add_extra_questions(self, card: TestCardTypes | MultiCard) -> None:
+    def add_extra_questions(self, card: TestCardTypes) -> None:
         """Generates extra questions for the cards.
 
         The cards are created as follows:
@@ -525,13 +525,15 @@ class GakuManager:
         return None, new_cards
 
     def generate_kanji_import(
-        self, kanji_list: str, existing_cards: Optional[list[TestCardTypes]] = None
+        self,
+        kanji_list: str,
+        existing_cards: Optional[list[VocabCard | KanjiCard | RadicalCard]] = None,
     ) -> GeneratedImports:
         """Generates Kanji cards for a list."""
         logging.info(f"Generating import for kanji list: {kanji_list}")
         # ids of the generated cards in order and with dependencies
         import_items: list[ImportItem] = []
-        generated_cards: dict[str, TestCardTypes] = {}
+        generated_cards: dict[str, VocabCard | KanjiCard | RadicalCard] = {}
         errors: list[str] = []
         new_card_ids: list[str] = []
 
@@ -633,7 +635,7 @@ class GakuManager:
         """Generates cards from a vocabulary list."""
         # ids of the generated cards in order and with dependencies
         import_items: list[ImportItem] = []
-        generated_cards: dict[str, TestCardTypes] = {}
+        generated_cards: dict[str, VocabCard | KanjiCard | RadicalCard] = {}
         errors: list[str] = []
         new_card_ids: list[str] = []
 
@@ -720,7 +722,7 @@ class GakuManager:
         """Imports cards."""
         logging.info(f"Importing cards: {import_data}")
         logging.info(f"Will attach sources: {sources}")
-        cards_to_add: list[TestCardTypes] = []
+        cards_to_add: list[VocabCard | KanjiCard | RadicalCard] = []
         # TODO: update the import to avoid duplicate links and
         # switch the links back to CardSourceLink
         source_links_to_add: set[tuple[str, str]] = set()

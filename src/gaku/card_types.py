@@ -475,10 +475,10 @@ class MultiCard(BaseCard):
         return questions
 
 
-TestCardTypes = Union[VocabCard, KanjiCard, RadicalCard, QuestionCard]
+TestCardTypes = Union[VocabCard, KanjiCard, RadicalCard, QuestionCard, MultiCard]
 
 
-def create_card_from_json(card_data: dict) -> TestCardTypes | MultiCard:
+def create_card_from_json(card_data: dict) -> TestCardTypes:
     """Creates a card from json data."""
     card_type = CardType(card_data["card_type"])
     if card_data["card_id"] == "":

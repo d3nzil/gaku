@@ -28,7 +28,7 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
     def get_fsrs_due_cards(
         self,
         filter: CardFilter,
-    ) -> list[TestCardTypes | MultiCard]:
+    ) -> list[TestCardTypes]:
         """Get list of all cards with due date in the past.
         Oldest cards are first.
         """
@@ -73,7 +73,7 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
 
             return num_cards
 
-    def get_studied_cards(self, filter: CardFilter) -> list[TestCardTypes | MultiCard]:
+    def get_studied_cards(self, filter: CardFilter) -> list[TestCardTypes]:
         """Gets already studied cards, but ignoring current due status.
 
         Parameters
@@ -83,7 +83,7 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
 
         Returns
         -------
-        list[TestCardTypes | MultiCard]
+        list[TestCardTypes]
             Studied cards matching the filter
         """
 
@@ -156,7 +156,7 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
 
     def mistakes_get_mistakes_cards(
         self, time_history: int, filter: CardFilter
-    ) -> list[TestCardTypes | MultiCard]:
+    ) -> list[TestCardTypes]:
         """Get list of all cards marked as mistakes in last num_days days."""
         with Session(self.engine) as session:
             timestamp = datetime.now() - timedelta(seconds=time_history)
