@@ -31,5 +31,5 @@ ignore=[
     "D202",  # I think separating docsting and code by empty line improves readability
     "D205",  # Buggy rule, cannot distinguish multiline summary from single line
     ]
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
