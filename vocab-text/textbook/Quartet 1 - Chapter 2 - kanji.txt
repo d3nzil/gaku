@@ -38,7 +38,9 @@
 流れる
 
 # page 34
-国際交流課
+課長
+# 国際交流課 - International Relations Division, but not found in dictionary
+# 課長 is not in the list, but used as alternative for the kanji 課
 
 伝言
 手伝う
@@ -55,9 +57,9 @@
 
 多忙
 忙しい
-お忙しいところ
+# お忙しいところ - skipped since it is multiple words and 忙しい is already in the list
 
-突然の
+突然 - 突然の also means sudden
 突く
 
 訳す
@@ -103,7 +105,7 @@
 深まる
 
 公園
-公の
+公 - public
 
 花園
 
@@ -124,4 +126,4 @@
 
 敬語
 家具
-具体的な
+具体的
