@@ -10,7 +10,9 @@ authors= [
 ]
 dynamic = ["version"]
 dependencies = [
-    "sqlalchemy>=2",
+    "sqlalchemy>=2,<3",
+    "pydantic>=2.10,<3",
+    "regex>=2024.11.6",
 ]
 requires-python = ">= 3.9"
 

@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
+from . import utils
 from .database import DbManager
 from .card_types import (
     TestQuestion,
@@ -416,6 +417,7 @@ class GakuManager:
         new_cards: list[str] = []
         kanji_entries = []
         for char in kanji_text:
+
             db_kanji = self.db.get_card_by_key(char, CardType.KANJI)
             if db_kanji:
                 if not isinstance(db_kanji, KanjiCard):
@@ -560,6 +562,10 @@ class GakuManager:
         kanji_list = kanji_list.replace("\n", "").replace(" ", "")
 
         for kanji in kanji_list:
+            if not utils.is_kanji(kanji):
+                logging.info(f"Skipping non-kanji character: {kanji}")
+                continue
+
             kanji_cards, new_cards = self.get_kanji_cards(
                 kanji, generate_kanji_cards=True
             )
