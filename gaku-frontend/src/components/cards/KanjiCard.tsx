@@ -34,7 +34,7 @@ const KanjiEntryComponent: React.FC<{
                 onChange={(newMeanings) => handleChange('meanings', newMeanings)}
             />
             <br />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: "1em", flexWrap: "wrap" }}>
                 <div>
 
                     Note:<br />

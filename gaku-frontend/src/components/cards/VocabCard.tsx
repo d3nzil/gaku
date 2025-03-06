@@ -96,7 +96,7 @@ const VocabEntryComponent: React.FC<{
             ))}
             <button onClick={addMeaning}>Add Meaning</button>
             <br />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: "1em", flexWrap: "wrap" }}>
                 <div>
                     Note:<br />
                     <textarea value={entry.note || ''} onChange={(e) => handleChange('note', e.target.value)} />

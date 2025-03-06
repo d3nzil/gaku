@@ -25,7 +25,7 @@ const RadicalEntryComponent: React.FC<{
             Reading:<br />
             <input type="text" value={entry.reading} onChange={(e) => handleChange('reading', e.target.value)} />
             <br /><br />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: "1em", flexWrap: "wrap" }}>
                 <div>
                     Note:<br />
                     <textarea value={entry.note || ''} onChange={(e) => handleChange('note', e.target.value)} />

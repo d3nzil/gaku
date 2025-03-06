@@ -106,7 +106,7 @@ const MultiCardEntryComponent: React.FC<{
 
                 </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row', gap: '1em' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '1em', flexWrap: "wrap" }}>
                 <div>
                     Note:<br />
                     <textarea value={entry.note || ''} onChange={(e) => handleChange('note', e.target.value)} />

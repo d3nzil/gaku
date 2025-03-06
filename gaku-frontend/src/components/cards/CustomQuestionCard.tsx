@@ -63,18 +63,20 @@ const QuestionEntryComponent: React.FC<{
             ))}
             <button onClick={addAnswer}>Add Answer</button>
             <br />
-            Note:{' '}
-            <textarea
-                value={entry.note || ''}
-                onChange={(e) => handleChange('note', e.target.value)}
-                placeholder="Note"
-            />
-            Hint:{' '}
-            <textarea
-                value={entry.hint || ''}
-                onChange={(e) => handleChange('hint', e.target.value)}
-                placeholder="Hint"
-            />
+            <div style={{ display: 'flex', flexDirection: 'row', gap: "1em", flexWrap: "wrap" }}>
+                Note:{' '}
+                <textarea
+                    value={entry.note || ''}
+                    onChange={(e) => handleChange('note', e.target.value)}
+                    placeholder="Note"
+                />
+                Hint:{' '}
+                <textarea
+                    value={entry.hint || ''}
+                    onChange={(e) => handleChange('hint', e.target.value)}
+                    placeholder="Hint"
+                />
+            </div>
         </div>
     );
 };
