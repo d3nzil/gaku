@@ -398,7 +398,7 @@ class GakuManager:
                 ]
 
         logging.info(f"Found {len(vocab_entries)} entries for {vocab_query}")
-        logging.warning(vocab_entries)
+        logging.debug(vocab_entries)
         return vocab_entries, new_cards
 
     def get_kanji_cards(
@@ -673,6 +673,8 @@ class GakuManager:
             vocab_cards, new_cards = self.get_vocab_entry(
                 vocab, generate_vocab_cards=True
             )
+            if len(vocab_cards) > 1:
+                errors.append(f"Multiple cards for vocab: {vocab}")
             new_card_ids.extend(new_cards)
 
             if not vocab_cards:
