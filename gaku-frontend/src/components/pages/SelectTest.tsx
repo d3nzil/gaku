@@ -1,6 +1,6 @@
 // component to select what to study
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from "../../services/api";
 import Select from 'react-select';
 import { useCommonState } from '../CommonState';
@@ -42,6 +42,8 @@ const SelectTest = () => {
     // other hooks
     const navigate = useNavigate();
 
+    // header
+    const headerRef = useRef<HTMLHeadingElement | null>(null);
 
 
     const createFilter = () => {
@@ -108,6 +110,10 @@ const SelectTest = () => {
     useEffect(() => {
         document.title = "Gaku - Select Test";
         updateStats();
+        if (headerRef.current)
+        {
+            headerRef.current.scrollIntoView();
+        }
     }, []);
 
 
@@ -209,7 +215,7 @@ const SelectTest = () => {
     return (
         <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
             <div style={{ width: "100%", maxWidth: "40em" }}>
-                <h2>Study Selection</h2>
+                <h2 ref={headerRef}>Study Selection</h2>
                 <div style={{ display: 'flex', gap: "1em", border: "1px solid grey", padding: "0.5em", borderRadius: "0.5em", marginBottom: "0.5em" }}>
                     <div style={{ flex: 1 }}>
                         <h3 style={{ margin: "0 0", padding: "0.5em 0" }} >Test status</h3>
@@ -220,7 +226,7 @@ const SelectTest = () => {
                     </div>
                     {numDueStats ? (
                         <div style={{ flex: 1 }}>
-                            <h3 style={{ margin: "0 0", padding: "0.5em 0" }} >Upcoming due cards</h3>
+                            <h3 style={{ margin: "0 0", padding: "0.5em 0" }} >Due card forecast</h3>
                             <table>
                                 <tbody>
                                     {Object.keys(numDueStats).map((key) => (
@@ -325,9 +331,8 @@ const SelectTest = () => {
                             <tbody>
                                 {Object.keys(numRecentMistakesStats).map((key) => (
                                     <tr key={key}>
-                                        <td><a href="#" onClick={(e) => { e.preventDefault(); setNumDaysSince(parseInt(key)); setNumHoursSince(0); }}>In last {key} day(s)</a></td>
+                                        <td><a href="#" onClick={(e) => { e.preventDefault(); setNumDaysSince(parseInt(key)); setNumHoursSince(0); }}>{key} day(s) ago</a></td>
                                         <td style={{ textAlign: "right" }}>+{numRecentMistakesStats[key]}</td>
-                                        <td>cards</td>
                                     </tr>
                                 ))}
                             </tbody>

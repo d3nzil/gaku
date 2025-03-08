@@ -56,3 +56,12 @@ so I have to reset it to white. */
 .incorrect-answer {
   background-color: var(--incorrect-answer-bg);
 }
+
+table {
+  border-spacing: 0;
+}
+
+td,
+th {
+  padding: 0 0.1em;
+}
