@@ -152,8 +152,7 @@ class Answer(BaseModel):
             # so the best solution is probably using regex to find what to remove
             paren_regex = re.compile(r"\s*\([^)]*\)\s*")
             no_paren_answers = [
-                paren_regex.sub("", answer.answer_text).strip()
-                for answer in self.answers
+                paren_regex.sub("", answer).strip() for answer in expected_answers
             ]
             no_paren_required_answers: list[str] = [
                 paren_regex.sub("", required_answer).strip()
@@ -195,7 +194,12 @@ class Answer(BaseModel):
             # check if all the answers are in the set of correct answers
             # since we are using set, the order of answers does not matter
             # and we can just check if the set of received answers is a subset of the set of correct answers
-            return received_answers.issubset(expected_answers)
+            answer_is_correct = received_answers.issubset(expected_answers)
+            if not answer_is_correct:
+                logging.info(
+                    f"Answer is not correct, accepted answers are: {expected_answers}"
+                )
+            return answer_is_correct
 
         logging.debug("Processing Hiragana or Katakana answer")
         # if the type is HIRAGANA or KATAKANA we need to split the answer to set
