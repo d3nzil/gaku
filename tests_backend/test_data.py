@@ -16,15 +16,15 @@ VOCAB_CARD = VocabCard(
     hint="vocab hint",
     writing="vocab writing",
     readings=[
-        AnswerText(answer_text="vocab reading 1"),
-        AnswerText(answer_text="vocab reading 2"),
+        AnswerText(answer_text="lowercase vocab reading 1"),
+        AnswerText(answer_text="MiXedCaSe vocab reading 2"),
     ],
     meanings=[
         VocabularyMeaningEntry(
             part_of_speech="part vocab",
             meanings=[
-                AnswerText(answer_text="vocab meaning 1"),
-                AnswerText(answer_text="vocab meaning 2", required=True),
+                AnswerText(answer_text="UPPERCASE VOCAB MEANING 1"),
+                AnswerText(answer_text="Capitalised Vocab Meaning 2", required=True),
             ],
         )
     ],
