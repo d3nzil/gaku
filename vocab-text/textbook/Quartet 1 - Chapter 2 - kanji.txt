@@ -38,9 +38,9 @@
 流れる
 
 # page 34
-課長
-# 国際交流課 - International Relations Division, but not found in dictionary
-# 課長 is not in the list, but used as alternative for the kanji 課
+国際
+国際交流課 - International Relations Division, textbook specific, not found in dictionary
+# 国際 is not in the list, but is separate word that might be useful to know
 
 伝言
 手伝う
@@ -124,6 +124,6 @@
 
 機会
 
-敬語
+敬具
 家具
 具体的
