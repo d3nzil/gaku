@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from "../../services/api";
 import IMEInput from '../IMEInput';
-import { NextCardMessage, VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestQuestion, AnswerText } from '../../types/CardTypes';
+import { NextCardMessage, VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestQuestion, OnomatopoeiaCard, AnswerText, MultiCardEntry } from '../../types/CardTypes';
 import { getEntryComponent } from '../cards/CardView';
 import { useCommonState } from '../CommonState';
 
@@ -29,9 +29,12 @@ const TestFlashcards = () => {
     const submitInputRef = useRef<HTMLInputElement>(null);
 
     // Add state for available and selected card sources
-    const [receivedCard, setReceivedCard] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | null>(null);
+    const [receivedCard, setReceivedCard] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard | MultiCardEntry | null>(null);
     const [showCardInfo, setShowCardInfo] = useState(false);
     const { updateTestSessionStatus } = context;
+
+    // header
+    const questionHeaderRef = useRef<HTMLStyleElement | null>(null);
 
     // update test session status and fetch next card on component mount
     useEffect(() => {
@@ -48,6 +51,10 @@ const TestFlashcards = () => {
         api.isPractice().then((practice) => {
             setIsPractice(practice);
         });
+        if (questionHeaderRef.current)
+        {
+            questionHeaderRef.current.scrollIntoView();
+        }
     }, []);
 
     useEffect(() => {
@@ -257,7 +264,7 @@ const TestFlashcards = () => {
                     {/* current question */}
                     {currentQuestion ? (
                         <div>
-                            <b>{currentQuestion.header}</b><br />
+                            <b ref={questionHeaderRef}>{currentQuestion.header}</b><br />
                             <p style={{ fontSize: "2.5em", margin: "0" }} lang='ja'>{currentQuestion.question}</p>
                             {/* <br /> */}
                             {showHint && <div style={{ maxWidth: "20em", paddingBottom: "0.5em" }}> {currentQuestion.hint}</div>}

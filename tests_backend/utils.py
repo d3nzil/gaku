@@ -58,9 +58,11 @@ class TestSetup:
         japanese_dict = gaku.dictionary.JapaneseDictionary(
             RESOURCE_DIR / "JMdict_e.xml"
         )
+        ono_dict = gaku.dictionary.load_ono_dictionary(RESOURCE_DIR / "j-ono-data.json")
         dictionary.add_radicals(list(radical_dict.radicals.values()))
         dictionary.add_kanji(list(kanji_dict.kanji.values()))
         dictionary.add_vocabulary(list(japanese_dict.entries.values()))
+        dictionary.add_onomatopoeia(ono_dict)
         logging.info("Finished importing dictionaries")
 
 

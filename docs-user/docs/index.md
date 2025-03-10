@@ -33,6 +33,11 @@ Admiteddly, this organization is not ideal, but was good enough to get started. 
 ## Preparing a wordlist
 Wordlist is a list of Japanese words you want to learn. It has to be one word per line, in dictionary form. If not sure about the correct dictionary form, look up the word in https://jisho.org or other dictionary and copy it from there. If the word is commonly in kana, but has kanji form, it is often better to put the kanji form in the list, to avoid having to avoid getting sometimes many words with same writing. But if there is only one or few words with the same kana, it can be used too. For book, manga and similar source it is best to write down the words in the order they appear. This is because when learning, the words appear in the order they are in the list. Note that the wordlist only contains vocabulary. The information about kanji and radicals are then added automatically.
 
+Besides normal vocabulary, the Gaku also supports Onomatopoeia (sound effects and such, usually found in manga). Since these are stored in separate dictionary, they need to be prefixed with `@` symbol currently. These also need to be written in hiragana or katakana so the dictionary lookup finds them. For example:
+```
+@あっはっはっはっ
+```
+
 Additionally, you can add comments and hints for the words like:
 ```
 # lines like this starting with # are considered a comments

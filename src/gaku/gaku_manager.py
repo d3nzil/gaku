@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from . import utils
+from . import card_types
 from .database import DbManager
 from .card_types import (
     TestQuestion,
@@ -21,7 +22,6 @@ from .card_types import (
     AnswerGroup,
     AnswerType,
     TestCardTypes,
-    MultiCard,
     AnswerText,
 )
 from .test_session import TestSession
@@ -32,6 +32,7 @@ from .dictionary import (
     DictionaryEntry,
     Kanji,
     Radical,
+    load_ono_dictionary,
 )
 from .db_dictionary import DictionaryManager
 from .api_types import (
@@ -74,12 +75,14 @@ class GakuManager:
         radical_dict = RadicalDictionary(self.resource_dir / "kanji-radicals.csv")
         kanji_dict = KanjiDictionary(self.resource_dir / "kanjidic2.xml")
         japanese_dict = JapaneseDictionary(self.resource_dir / "JMdict_e.xml")
+        ono_dict = load_ono_dictionary(self.resource_dir / "j-ono-data.json")
 
         # create database
         self.dictionary.create_database()
         self.dictionary.add_radicals(list(radical_dict.radicals.values()))
         self.dictionary.add_kanji(list(kanji_dict.kanji.values()))
         self.dictionary.add_vocabulary(list(japanese_dict.entries.values()))
+        self.dictionary.add_onomatopoeia(ono_dict)
         logging.info("Finished importing dictionaries")
 
     def import_cards_from_file(self, import_file: Path) -> None:
@@ -529,13 +532,17 @@ class GakuManager:
     def generate_kanji_import(
         self,
         kanji_list: str,
-        existing_cards: Optional[list[VocabCard | KanjiCard | RadicalCard]] = None,
+        existing_cards: Optional[
+            list[VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard]
+        ] = None,
     ) -> GeneratedImports:
         """Generates Kanji cards for a list."""
         logging.info(f"Generating import for kanji list: {kanji_list}")
         # ids of the generated cards in order and with dependencies
         import_items: list[ImportItem] = []
-        generated_cards: dict[str, VocabCard | KanjiCard | RadicalCard] = {}
+        generated_cards: dict[
+            str, VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard
+        ] = {}
         errors: list[str] = []
         new_card_ids: list[str] = []
 
@@ -635,13 +642,74 @@ class GakuManager:
             errors=errors,
         )
 
+    def generate_onomatopoeia_import(
+        self,
+        text: str,
+        existing_cards: Optional[
+            list[VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard]
+        ] = None,
+    ) -> GeneratedImports:
+        """Generates Onomatopoeia card(s) for provided text."""
+        # ids of the generated cards in order and with dependencies
+        import_items: list[ImportItem] = []
+        generated_cards: dict[
+            str, VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard
+        ] = {}
+        errors: list[str] = []
+        new_card_ids: list[str] = []
+
+        if existing_cards is None:
+            existing_cards = []
+        ono_card_refs: list[str] = [
+            card.writing
+            for card in existing_cards
+            if isinstance(card, card_types.OnomatopoeiaCard)
+        ]
+
+        db_ono = self.db.get_cards_by_text(
+            filter=CardFilter(text=text, card_types=[card_types.CardType.ONOMATOPOEIA])
+        )
+        for item in db_ono:
+            if not isinstance(item, card_types.OnomatopoeiaCard):
+                errors.append(f"Wrong card data for Onomatopoeia, skipping: {item}")
+                continue
+
+            if item.writing in ono_card_refs:
+                # card is already in the list
+                continue
+            generated_cards[item.card_id] = item
+            ono_card_refs.append(item.writing)
+            import_items.append(ImportItem(item_id=item.card_id, sub_items=[]))
+
+        dict_ono = self.dictionary.get_ono_by_kana(text)
+        for item in dict_ono:
+            if item.writing in ono_card_refs:
+                # card is already in the list
+                continue
+            generated_cards[item.card_id] = item
+            new_card_ids.append(item.card_id)
+            ono_card_refs.append(item.writing)
+            import_items.append(ImportItem(item_id=item.card_id, sub_items=[]))
+
+        if len(db_ono) == 0 and len(dict_ono) == 0:
+            errors.append(f"No Onomatopoeia entry found for: {text}")
+
+        return GeneratedImports(
+            import_items=import_items,
+            generated_cards=generated_cards,
+            new_card_ids=new_card_ids,
+            errors=errors,
+        )
+
     def generate_vocab_import(
         self, vocab_list: list[str], source_id: str = ""
     ) -> GeneratedImports:
         """Generates cards from a vocabulary list."""
         # ids of the generated cards in order and with dependencies
         import_items: list[ImportItem] = []
-        generated_cards: dict[str, VocabCard | KanjiCard | RadicalCard] = {}
+        generated_cards: dict[
+            str, VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard
+        ] = {}
         errors: list[str] = []
         new_card_ids: list[str] = []
 
@@ -668,6 +736,24 @@ class GakuManager:
 
             if vocab == "":
                 logging.info("Empty word in vocab list")
+                continue
+
+            if vocab.startswith("@"):
+                # Onomatopoeia card
+                ono_cards = self.generate_onomatopoeia_import(
+                    vocab[1:],
+                    [
+                        card
+                        for card in generated_cards.values()
+                        if isinstance(card, card_types.OnomatopoeiaCard)
+                    ],
+                )
+                generated_cards.update(ono_cards.generated_cards)
+                errors.extend(ono_cards.errors)
+                new_card_ids.extend(ono_cards.new_card_ids)
+                for card in ono_cards.generated_cards:
+                    import_items.append(ImportItem(item_id=card))
+
                 continue
 
             vocab_cards, new_cards = self.get_vocab_entry(
@@ -730,7 +816,9 @@ class GakuManager:
         """Imports cards."""
         logging.info(f"Importing cards: {import_data}")
         logging.info(f"Will attach sources: {sources}")
-        cards_to_add: list[VocabCard | KanjiCard | RadicalCard] = []
+        cards_to_add: list[
+            VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard
+        ] = []
         # TODO: update the import to avoid duplicate links and
         # switch the links back to CardSourceLink
         source_links_to_add: set[tuple[str, str]] = set()
@@ -740,6 +828,7 @@ class GakuManager:
         # this is so the cards can be learned in the correct order:
         # first the radicals, then the kanji, then the vocab
         def add_cards_to_list(import_item: ImportItem) -> None:
+            logging.debug(f"Adding cards to import list: {import_item}")
             for sub_item in import_item.sub_items:
                 add_cards_to_list(sub_item)
             card = import_data.generated_cards[import_item.item_id]

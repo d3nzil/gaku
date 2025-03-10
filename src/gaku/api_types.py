@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from . import card_types
 from .card_types import (
     TestCardTypes,
     CardSource,
@@ -114,9 +115,9 @@ class GeneratedImports(BaseModel):
     # list of generated items ids in order
     import_items: list[ImportItem] = Field(default_factory=list)
     # generated test cards - key is the card id
-    generated_cards: dict[str, VocabCard | KanjiCard | RadicalCard] = Field(
-        default_factory=dict
-    )
+    generated_cards: dict[
+        str, VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard
+    ] = Field(default_factory=dict)
     # list of ids of new cards (not yet in the database)
     new_card_ids: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)

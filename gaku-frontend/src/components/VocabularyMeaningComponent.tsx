@@ -1,6 +1,6 @@
 
 import React from 'react';
-import MultiInput from './MultiInput';
+import { MultiInput } from './MultiInputComponent';
 
 import { VocabularyMeaningEntry } from '../types/CardTypes';
 

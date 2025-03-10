@@ -1,5 +1,5 @@
 import { AnswerType } from '../../types/CardTypes';
-import MultiInput from '../MultiInput';
+import { MultiInput } from '../MultiInputComponent';
 import AnswerComponent from '../AnswerComponent';
 import VocabularyMeaningComponent from '../VocabularyMeaningComponent';
 

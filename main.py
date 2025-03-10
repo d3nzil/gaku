@@ -25,7 +25,6 @@ from gaku.gaku_manager import GakuManager
 from gaku.card_types import (
     CardSource,
     TestCardTypes,
-    MultiCard,
     BaseCard,
     create_card_from_json,
 )
@@ -126,6 +125,7 @@ async def add_card(card: dict) -> dict:
         raise HTTPException(
             status_code=400, detail="ID should not be provided for new card"
         )
+    logging.info(f"Creating card from: {card}")
     test_card = create_card_from_json(card)
     manager.db.add_card(test_card)
     logging.info(f"Added card: {test_card}")
@@ -161,7 +161,9 @@ async def delete_card(card: BaseCard) -> dict:
 
 
 @app.post("/cards/get_by_text")
-async def get_cards_by_text(filter: CardFilter) -> list[TestCardTypes]:
+async def get_cards_by_text(
+    filter: CardFilter,
+) -> list[TestCardTypes]:
     """Get cards by text."""
     logging.info(f"Getting cards with filter: {filter}")
     cards = manager.db.get_cards_by_text(filter=filter)

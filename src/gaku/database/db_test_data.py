@@ -38,7 +38,7 @@ class TestEntryManager(DbManagerBase):
 
     def import_cards(
         self,
-        cards: list[card_types.TestCardTypes | card_types.MultiCard],
+        cards: list[card_types.TestCardTypes],
     ) -> None:
         """Imports cards from json file into database."""
 
@@ -46,13 +46,16 @@ class TestEntryManager(DbManagerBase):
             highest_position = self.get_card_highest_position() + 1
             cards_db = []
             for pos, card in enumerate(cards):
-                if isinstance(card, card_types.VocabCard):
-                    key = card.writing
-                elif isinstance(card, card_types.KanjiCard):
-                    key = card.writing
-                elif isinstance(card, card_types.RadicalCard):
-                    key = card.writing
-                elif isinstance(card, card_types.QuestionCard):
+                if isinstance(
+                    card,
+                    (
+                        card_types.VocabCard,
+                        card_types.KanjiCard,
+                        card_types.RadicalCard,
+                        card_types.QuestionCard,
+                        card_types.OnomatopoeiaCard,
+                    ),
+                ):
                     key = card.writing
                 elif isinstance(card, card_types.MultiCard):
                     card.update_writing()
@@ -92,7 +95,7 @@ class TestEntryManager(DbManagerBase):
     # generate cards from search query results
     def generate_cards_from_scalar(
         self, card_rows: ScalarResult[TestCardsTable]
-    ) -> List[card_types.TestCardTypes | card_types.MultiCard]:
+    ) -> List[card_types.TestCardTypes]:
         """Generates cards from search query results."""
         with Session(self.engine) as session:
             # get all card data
@@ -126,7 +129,7 @@ class TestEntryManager(DbManagerBase):
     def get_cards_any_state(
         self,
         filter: Optional[CardFilter] = None,
-    ) -> List[card_types.TestCardTypes | card_types.MultiCard]:
+    ) -> List[card_types.TestCardTypes]:
         """Returns cards matching filter and ignoring FSRS data."""
         with Session(self.engine) as session:
             card_select = select(TestCardsTable).order_by(TestCardsTable.position)
@@ -134,9 +137,7 @@ class TestEntryManager(DbManagerBase):
                 card_select = self.apply_card_filter_select(card_select, filter)
             return self.generate_cards_from_scalar(session.scalars(card_select))
 
-    def get_new_cards(
-        self, filter: CardFilter
-    ) -> List[card_types.TestCardTypes | card_types.MultiCard]:
+    def get_new_cards(self, filter: CardFilter) -> List[card_types.TestCardTypes]:
         """Returns all cards that have not been tested yet
         and so don't have any FSRS data.
         """
@@ -199,14 +200,14 @@ class TestEntryManager(DbManagerBase):
 
     def add_card(
         self,
-        card: Union[card_types.TestCardTypes | card_types.MultiCard],
+        card: Union[card_types.TestCardTypes],
     ) -> None:
         """Adds a card to database."""
         self.import_cards([card])
 
     def update_card(
         self,
-        card: Union[card_types.TestCardTypes | card_types.MultiCard],
+        card: Union[card_types.TestCardTypes],
     ) -> None:
         """Updates card data in database."""
         with Session(self.engine) as session:
@@ -222,13 +223,16 @@ class TestEntryManager(DbManagerBase):
                 raise ValueError(
                     f"Card type {card.card_type} does not match the card type in the database {card_db.card_type}"
                 )
-            if isinstance(card, card_types.VocabCard):
-                card_key = card.writing
-            elif isinstance(card, card_types.KanjiCard):
-                card_key = card.writing
-            elif isinstance(card, card_types.RadicalCard):
-                card_key = card.writing
-            elif isinstance(card, card_types.QuestionCard):
+            if isinstance(
+                card,
+                (
+                    card_types.VocabCard,
+                    card_types.KanjiCard,
+                    card_types.RadicalCard,
+                    card_types.QuestionCard,
+                    card_types.OnomatopoeiaCard,
+                ),
+            ):
                 card_key = card.writing
             elif isinstance(card, card_types.MultiCard):
                 card.update_writing()
@@ -378,7 +382,7 @@ class TestEntryManager(DbManagerBase):
 
     def get_card_by_key(
         self, key: str, card_type: card_types.CardType
-    ) -> Optional[card_types.TestCardTypes | card_types.MultiCard]:
+    ) -> Optional[card_types.TestCardTypes]:
         """Returns card for a specified combination of key and card type."""
         with Session(self.engine) as session:
             card = (
@@ -398,9 +402,7 @@ class TestEntryManager(DbManagerBase):
 
             return card_types.create_card_from_json(card_data)
 
-    def get_card_by_card_id(
-        self, card_id: str
-    ) -> Optional[card_types.TestCardTypes | card_types.MultiCard]:
+    def get_card_by_card_id(self, card_id: str) -> Optional[card_types.TestCardTypes]:
         """Returns card for a specified card id."""
         with Session(self.engine) as session:
             card = (
@@ -458,13 +460,16 @@ class TestEntryManager(DbManagerBase):
             highest_position = self.get_card_highest_position() + 1
             cards_db = []
             for pos, card in enumerate(cards):
-                if isinstance(card, card_types.VocabCard):
-                    key = card.writing
-                elif isinstance(card, card_types.KanjiCard):
-                    key = card.writing
-                elif isinstance(card, card_types.RadicalCard):
-                    key = card.writing
-                elif isinstance(card, card_types.QuestionCard):
+                if isinstance(
+                    card,
+                    (
+                        card_types.VocabCard,
+                        card_types.KanjiCard,
+                        card_types.RadicalCard,
+                        card_types.QuestionCard,
+                        card_types.OnomatopoeiaCard,
+                    ),
+                ):
                     key = card.writing
                 elif isinstance(card, card_types.MultiCard):
                     card.update_writing()
@@ -556,9 +561,7 @@ class TestEntryManager(DbManagerBase):
             card_select = card_select.offset(filter.start_index)
         return card_select
 
-    def get_cards_by_text(
-        self, filter: CardFilter
-    ) -> List[card_types.TestCardTypes | card_types.MultiCard]:
+    def get_cards_by_text(self, filter: CardFilter) -> List[card_types.TestCardTypes]:
         """Returns cards that contain given text in their data."""
         with Session(self.engine) as session:
             cards_select = self.apply_card_filter_select(

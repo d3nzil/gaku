@@ -1,22 +1,22 @@
 import axios from 'axios';
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, AnswerResult, CardFilter, MultiCardEntry, StartTestRequest, TestResults } from '../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, AnswerResult, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard } from '../types/CardTypes';
 
 const apiUrl = "http://localhost:8000";
 
 // card editor API methods
-const getCards = (): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry)[]> =>
+const getCards = (): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
     axios.get(`${apiUrl}/cards`).then((response) => response.data);
 
-const addCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry): Promise<any> =>
+const addCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): Promise<any> =>
     axios.post(`${apiUrl}/cards/add`, card).then((response) => response.data);
 
-const updateCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry): Promise<any> =>
+const updateCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): Promise<any> =>
     axios.post(`${apiUrl}/cards/update`, card).then((response) => response.data);
 
-const deleteCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry): Promise<any> =>
+const deleteCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): Promise<any> =>
     axios.post(`${apiUrl}/cards/delete`, card).then((response) => response.data);
 
-const getCardsByText = (filter: CardFilter): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry)[]> =>
+const getCardsByText = (filter: CardFilter): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
     axios.post(`${apiUrl}/cards/get_by_text`, filter).then((response) => response.data);
 
 // card source API methods

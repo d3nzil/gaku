@@ -17,7 +17,7 @@ from gaku.card_types import (
 from gaku.api_types import StartTestRequest
 
 from .utils import TestSetup, get_answer_for_question
-from .test_data import VOCAB_CARD, KANJI_CARD, RADICAL_CARD
+from .test_data import VOCAB_CARD, KANJI_CARD, RADICAL_CARD, ONOMATOPOEIA_CARD
 
 
 class TestBasics(TestSetup):
@@ -68,6 +68,19 @@ class TestBasics(TestSetup):
         retrieved_card = cards[0]
         assert isinstance(retrieved_card, gaku.card_types.RadicalCard)
         assert RADICAL_CARD.model_dump_json() == retrieved_card.model_dump_json()
+
+    def test_add_onomatopoeia_card(self) -> None:
+        """Verifies that Onomatopoeia card can be added to Gaku."""
+        logging.info("Adding Onomatopoeia card")
+        self.manager.db.add_card(ONOMATOPOEIA_CARD)
+
+        cards = self.manager.db.get_cards_any_state()
+        logging.info(f"Got cards: {cards}")
+        assert len(cards) == 1
+
+        retrieved_card = cards[0]
+        assert isinstance(retrieved_card, gaku.card_types.OnomatopoeiaCard)
+        assert ONOMATOPOEIA_CARD.model_dump_json() == retrieved_card.model_dump_json()
 
     def test_generate_vocab_card_one(self) -> None:
         """Verifies that vocab card with one dictionary entry is
@@ -201,6 +214,48 @@ class TestBasics(TestSetup):
         assert card.writing == test_radical
         assert card.reading == "ひと"
         assert [meaning.answer_text for meaning in card.meanings] == ["person"]
+
+    def test_generate_onomatopoeia_card(self) -> None:
+        """Verifies that Onomatopoeia card can be generated."""
+        test_ono = "あっはっはっはっ"
+        manager = self.manager
+
+        generated_imports = manager.generate_onomatopoeia_import(test_ono)
+        logging.info(f"Generated cards for {test_ono} are: {generated_imports}")
+        ono_cards = [
+            card
+            for card in generated_imports.generated_cards.values()
+            if isinstance(card, gaku.card_types.OnomatopoeiaCard)
+        ]
+        assert len(ono_cards) == 1
+        card = ono_cards[0]
+        logging.info(f"Onomatopoeia card is: {card}")
+        assert isinstance(card, gaku.card_types.OnomatopoeiaCard)
+        assert card.card_type == CardType.ONOMATOPOEIA
+        assert card.writing == "ahaha"
+        assert card.kana_writing == [
+            "あはは",
+            "あははは",
+            "あっはっはっ",
+            "あっはっはっはっ",
+            "アハハ",
+            "アハハハ",
+            "アッハッハ",
+            "アッハッハッハッ",
+        ]
+        assert len(card.definitions) == 1
+        card_definition_equivalents = [
+            equivalent.answer_text for equivalent in card.definitions[0].equivalent
+        ]
+        assert card_definition_equivalents == [
+            "ahaha",
+            "cackle",
+            "guffaw",
+            "haha",
+            "laughter",
+            "snicker",
+        ]
+        assert card.definitions[0].meaning.answer_text == "the sound of loud laughter"
 
     def test_import_and_test_new_cards(self) -> None:
         """Verifies that cards can be imported and test can be started
@@ -523,3 +578,57 @@ class TestBasics(TestSetup):
         deleted_sources = manager.db.get_card_sources_list()
         logging.info(f"Deleted sources list: {deleted_sources}")
         assert len(deleted_sources) == 0
+
+    def test_ono_dictionary(self) -> None:
+        """Basic test that search in onomatopoeia dictionary works."""
+
+        manager = self.manager
+
+        ono_cards = manager.dictionary.get_ono_by_kana("あは")
+        logging.info(f"Got Onomatopoeia cards for あは: {ono_cards}")
+        assert len(ono_cards) > 0
+
+    def test_import_and_test_for_onomatopoeia(self) -> None:
+        """Verify that Onomatopoeia card can be imported and works in test.
+
+        Verifies:
+        - generation of Onomatopoeia card
+        - import of the card
+        - retrieval from database
+        - running test with the card
+        """
+
+        test_ono = "あっはっはっはっ"
+        manager = self.manager
+
+        generated_imports = manager.generate_onomatopoeia_import(test_ono)
+        logging.info(f"Generated cards for {test_ono} are: {generated_imports}")
+        manager.import_cards(generated_imports, sources=[])
+
+        all_cards = manager.db.get_cards_any_state()
+        logging.info(f"All cards: {all_cards}")
+        assert len(all_cards) == 1
+
+        test_setup = StartTestRequest(num_cards=0, generate_extra_questions=False)
+        manager.start_test_session_new_cards(test_setup)
+
+        test = manager.test_session
+        assert test is not None
+        logging.info(f"Test started is: {test}")
+        # there should be one question for Onomatopoeia card
+        assert len(test.remaining_questions) == 1
+
+        question = test.get_test_question()
+        assert question.test_card is not None
+        card_id = question.test_card.card_id
+
+        while question.next_question is not None:
+            test.answer_question(get_answer_for_question(question))
+            question = test.get_test_question()
+
+        assert test.is_session_finished()
+
+        fsrs_card = manager.db.get_fsrs_data_for_card(card_id)
+        assert fsrs_card is not None
+        logging.info(f"FSRS data after completed test: {fsrs_card.to_dict()}")
+        assert isinstance(fsrs_card, fsrs.Card)
