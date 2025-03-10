@@ -3,7 +3,7 @@ import api from "../../services/api";
 import Select from 'react-select';
 import getEntryComponent from '../cards/CardView';
 
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, CardSource, GeneratedImports, ImportItem, MultiCardEntry } from '../../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, OnomatopoeiaCard, CardSource, GeneratedImports, ImportItem, MultiCardEntry } from '../../types/CardTypes';
 
 
 const ImportTool = () => {
@@ -48,7 +48,7 @@ const ImportTool = () => {
     }
 
     const handleEntryChange = (
-        updatedEntry: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry
+        updatedEntry: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard
     ) => {
         if (generatedImports)
         {
@@ -130,7 +130,7 @@ const ImportTool = () => {
                 clearImports();
             } else
             {
-                setImportResult("Import failed: " + response.error);
+                setImportResult("Import failed: ${response.error ?? 'Unknown error'}.");
             }
         }
         );
@@ -180,7 +180,7 @@ const ImportTool = () => {
                                 <>
                                     <h3>Import generation errors:</h3>
                                     <textarea
-                                        style={{ height: '10em', width: '25em' }}
+                                        style={{ height: '10em', width: '20em' }}
                                         value={generatedImports.errors.join('\n')}
                                         readOnly
                                     />

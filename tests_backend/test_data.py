@@ -6,6 +6,8 @@ from gaku.card_types import (
     RadicalCard,
     VocabularyMeaningEntry,
     AnswerText,
+    OnomatopoeiaCard,
+    OnomatopoeiaDefinition,
 )
 
 
@@ -43,4 +45,25 @@ RADICAL_CARD = RadicalCard(
     writing="radical writing",
     reading="radical reading",
     meanings=[AnswerText(answer_text="radical meaning")],
+)
+ONOMATOPOEIA_CARD = OnomatopoeiaCard(
+    card_id="onomatop-oeia-4173-9964-fa7e175e25c3",
+    writing="onomatopoeia writing",
+    kana_writing=["onomatopoeia kana writing"],
+    definitions=[
+        OnomatopoeiaDefinition(
+            equivalent=[
+                AnswerText(answer_text="ono def 1 equivalent 1"),
+                AnswerText(answer_text="ono def 1 equivalent 2"),
+            ],
+            meaning=AnswerText(answer_text="ono def 1 meaning"),
+        ),
+        OnomatopoeiaDefinition(
+            equivalent=[
+                AnswerText(answer_text="ono def 2 equivalent 1"),
+                AnswerText(answer_text="ono def 1 equivalent 2"),
+            ],
+            meaning=AnswerText(answer_text="ono def 2 meaning"),
+        ),
+    ],
 )

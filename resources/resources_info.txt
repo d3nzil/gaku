@@ -15,6 +15,6 @@ Needed files:
 - JMdict_e.xml - from JMdict
 - kanjidic2.xml - from Kanjidic2
 
-# (Unused for now,  planned for future) Onomatopeia:
+# Onomatopeia:
 https://github.com/ObakeConstructs/j-ono-data
 License: MIT License

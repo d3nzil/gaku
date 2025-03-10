@@ -17,7 +17,6 @@ from .db_recent_mistakes import MistakesManager
 
 from ..card_types import (
     TestCardTypes,
-    MultiCard,
 )
 from ..api_types import CardFilter
 

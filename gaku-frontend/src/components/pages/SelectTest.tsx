@@ -303,6 +303,7 @@ const SelectTest = () => {
                                 { value: CardType.KANJI, label: 'Kanji' },
                                 { value: CardType.VOCABULARY, label: 'Vocabulary' },
                                 { value: CardType.RADICAL, label: 'Radical' },
+                                { value: CardType.ONOMATOPOEIA, label: "Onomatopoeia" },
                                 { value: CardType.MULTI_CARD, label: 'Multi Card' },
                                 { value: CardType.QUESTION, label: 'Custom Question' },
                             ]}

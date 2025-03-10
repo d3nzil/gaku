@@ -1,4 +1,4 @@
-import MultiInput from '../MultiInput';
+import { MultiInput } from '../MultiInputComponent';
 import AnswerComponent from '../AnswerComponent';
 
 type KanjiEntry = import('../../types/CardTypes').KanjiEntry;

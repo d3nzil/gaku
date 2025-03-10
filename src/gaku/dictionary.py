@@ -1,10 +1,14 @@
 """Dictionary files related functionality."""
 
+import json
 from csv import DictReader
 from pathlib import Path
 from typing import Optional, List, Dict
 import pydantic
 import xml.etree.ElementTree as ET
+
+from .card_types import OnomatopoeiaCard
+from .question import AnswerText
 
 # mypy: ignore-errors
 
@@ -387,31 +391,24 @@ class JapaneseDictionary:
         ]
 
 
-if __name__ == "__main__":
-    radical_dict = RadicalDictionary(Path("resources/kanji-radicals.csv"))
-    # print(radical_dict.radicals)
-    kanji_dict = KanjiDictionary(Path("resources/kanjidic2.xml"))
-    # print(kanji_dict.kanji)
-    japanese_dict = JapaneseDictionary(Path("resources/JMdict_e.xml"))
-    # print(japanese_dict.entries)
-    # entries = japanese_dict.get_entries_by_kanji("日本")
-    entries = japanese_dict.get_vocabulary_by_kanji("日")
-    # entries = japanese_dict.get_entries_by_kanji("隙あり")
-    # entries = japanese_dict.get_entries_by_reading("にほん")
-    # entries = japanese_dict.get_entries_by_meaning("Japan")
-    for entry in entries:
-        print()
-        print(f"Vocabulary: {entry}")
+def load_ono_dictionary(dict_path: Path) -> list[dict]:
+    """Loads Onomatopoeia dictionary and returns entries list."""
+    with open(dict_path, "r", encoding="utf-8") as od:
+        ono_entries = json.loads(od.read())
 
-        for kanji in entry.kanji_elements:
-            for character in kanji:
-                kanji_entry = kanji_dict.get_kanji(character)
-                # print("kanji: ", kanji_entry)
-                if kanji_entry:
-                    print(f"Kanji: {kanji_entry} radicals: ", kanji_entry.radicals)
+        if not isinstance(ono_entries, list):
+            raise RuntimeError("Onomatopoeia dictionary in wrong format.")
 
-                    if "classical" in kanji_entry.radicals:
-                        radical = radical_dict.get_radical_by_id(
-                            kanji_entry.radicals["classical"]
-                        )
-                        print("Radical: ", radical)
+    # ono_cards = [
+    #     OnoCard(
+    #         writing=item["literal"],
+    #         kana_writing=item["hiragana"] + item["katakana"],
+    #         meaning=[
+    #             AnswerText(answer_text=definition["meaning"])
+    #             for definition in item["definition"]
+    #         ],
+    #     )
+    #     for item in ono_entries
+    # ]
+
+    return ono_entries

@@ -58,6 +58,7 @@ enum CardType {
     "RADICAL" = "RADICAL",
     "QUESTION" = "QUESTION",
     "MULTI_CARD" = "MULTI_CARD",
+    "ONOMATOPOEIA" = "ONOMATOPOEIA"
 }
 
 interface VocabEntry {
@@ -124,6 +125,23 @@ interface MultiCardEntry {
     writing: string;
 }
 
+interface OnomatopoeiaDefinition {
+    equivalent: AnswerText[];
+    meaning: AnswerText;
+}
+
+interface OnomatopoeiaCard {
+    // common fields
+    card_id: string;
+    note: string;
+    hint: string;
+
+    card_type: "ONOMATOPOEIA"
+    writing: string;
+    kana_writing: string[];
+    definitions: OnomatopoeiaDefinition[];
+}
+
 interface KanjiInfo {
     [key: string]: KanjiEntry;
 }
@@ -141,7 +159,7 @@ interface ImportDataEntry {
 interface NextCardMessage {
     correct_answer: boolean;
     next_question: TestQuestion;
-    test_card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry;
+    test_card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard;
 }
 
 interface AnswerResult {
@@ -168,7 +186,7 @@ interface GeneratedImports {
     // this contains the generated cards
     // dictionary - vocab, kanji or radical card
     generated_cards: {
-        [key: string]: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry;
+        [key: string]: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard;
     };
     new_card_ids: string[];
     errors: string[];
@@ -206,6 +224,7 @@ export type {
     RadicalInfo,
     QuestionEntry,
     MultiCardEntry,
+    OnomatopoeiaCard,
     ImportDataEntry,
     TestQuestion,
     TestAnswer,

@@ -27,6 +27,7 @@ class SourceManager(DbManagerBase):
         """Get list of all card sources."""
         with Session(self.engine) as session:
             sources = session.query(CardSourceTable).all()
+            sources.reverse()
             return [
                 card_types.CardSource(
                     source_id=source.source_id,

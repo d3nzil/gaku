@@ -7,7 +7,7 @@ interface MultiInputProps {
     onChange: (values: AnswerText[]) => void;
     placeholder?: string;
     imeMode?: 'toHiragana' | 'toKatakana' | null;
-}
+};
 
 const MultiInput: React.FC<MultiInputProps> = ({ values, onChange, placeholder, imeMode }) => {
     const handleInputChange = (index: number, value: string) => {
@@ -56,4 +56,55 @@ const MultiInput: React.FC<MultiInputProps> = ({ values, onChange, placeholder, 
     );
 };
 
-export default MultiInput;
+
+interface MultiInputStrProps {
+    values: string[];
+    onChange: (values: string[]) => void;
+    placeholder?: string;
+    imeMode?: 'toHiragana' | 'toKatakana' | null;
+};
+
+const MultiInputStr: React.FC<MultiInputStrProps> = ({ values, onChange, placeholder, imeMode }) => {
+
+    const handleInputChange = (index: number, value: string) => {
+        const newValues = [...values];
+        newValues[index] = value
+        onChange(newValues);
+    };
+
+    const addInput = () => {
+        onChange([...values, '']);
+    };
+
+    const removeInput = (index: number) => {
+        const newValues = values.filter((_, i) => i !== index);
+        onChange(newValues);
+    };
+
+    return (
+        <div style={{ display: 'flex', flexWrap: "wrap", flexDirection: "row", maxWidth: "45em" }}>
+            {values.map((value, index) => (
+                <div key={index} style={{ display: 'flex', flexDirection: 'row', minWidth: "14em", gap: "0.25em", paddingRight: "0.75em" }}>
+                    <IMEInput
+                        value={value}
+                        onChange={(newValue) => handleInputChange(index, newValue)}
+                        placeholder={placeholder}
+                        initialImeMode={imeMode}
+                    />
+                    <button onClick={() => removeInput(index)} style={{ backgroundColor: 'pink', color: "darkred" }}>
+                        X
+                    </button>
+                </div>
+            ))}
+            <button onClick={addInput} style={{ backgroundColor: 'lightgreen', color: "darkgreen" }}>
+                +
+            </button>
+        </div>
+    );
+};
+
+
+export {
+    MultiInput,
+    MultiInputStr
+};

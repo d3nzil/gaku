@@ -31,6 +31,7 @@ class CardType(Enum):
     VOCABULARY = "VOCABULARY"
     RADICAL = "RADICAL"
     QUESTION = "QUESTION"
+    ONOMATOPOEIA = "ONOMATOPOEIA"
     MULTI_CARD = "MULTI_CARD"
 
 
@@ -316,6 +317,55 @@ class RadicalCard(BaseCard):
         return test_cards + self.custom_questions
 
 
+class OnomatopoeiaDefinition(BaseModel):
+    """Onomatopoeia definition."""
+
+    equivalent: list[AnswerText]
+    meaning: AnswerText
+
+
+class OnomatopoeiaCard(BaseCard):
+    """Onomatopoeia entry."""
+
+    card_type: CardType = CardType.ONOMATOPOEIA
+
+    # copy of j-ono structure
+    # hiragana: list[str]
+    # katakana: list[str]
+    # definition: list[dict]
+    #   equivalent: list[str]
+    #   meaning: str
+    #   example - probably ignore
+    # literal: str
+    #   -> writing
+    writing: str
+    kana_writing: list[str]
+    definitions: list[OnomatopoeiaDefinition]
+
+    def get_test_questions(self) -> list[TestQuestion]:
+        """Creates test question for this Onomatopoeia card."""
+
+        return [
+            TestQuestion(
+                parent_id=self.card_id,
+                header="Onomatopoeia meaning",
+                question=", ".join(self.kana_writing),
+                answers=[
+                    AnswerGroup(
+                        answers=[
+                            Answer(
+                                answer_type=AnswerType.ROMAJI,
+                                header=f"{i+1}. meaning",
+                                answers=definition.equivalent,
+                            )
+                            for i, definition in enumerate(self.definitions)
+                        ]
+                    )
+                ],
+            )
+        ]
+
+
 class QuestionCard(BaseCard):
     """Card for custom questions."""
 
@@ -475,7 +525,9 @@ class MultiCard(BaseCard):
         return questions
 
 
-TestCardTypes = Union[VocabCard, KanjiCard, RadicalCard, QuestionCard, MultiCard]
+TestCardTypes = Union[
+    VocabCard, KanjiCard, RadicalCard, QuestionCard, MultiCard, OnomatopoeiaCard
+]
 
 
 def create_card_from_json(card_data: dict) -> TestCardTypes:
@@ -497,5 +549,8 @@ def create_card_from_json(card_data: dict) -> TestCardTypes:
         cards = [create_card_from_json(card) for card in card_data["cards"]]
         card_data["cards"] = cards
         return MultiCard(**card_data)
+    elif card_type == CardType.ONOMATOPOEIA:
+        logging.info(f"Creating Onomatopoeia card")
+        return OnomatopoeiaCard(**card_data)
     else:
         raise ValueError(f"Card type {card_type} not supported")

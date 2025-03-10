@@ -1,5 +1,6 @@
 """Database for the dictionary."""
 
+import json
 import logging
 from enum import Enum
 from typing import Optional
@@ -13,6 +14,7 @@ from sqlalchemy import (
     select,
     func,
     ScalarResult,
+    cast,
 )
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -23,7 +25,8 @@ from sqlalchemy.orm import (
 )
 
 from .dictionary import VocabularyMeaning, Radical, Kanji, DictionaryEntry
-
+from .question import AnswerText
+from .card_types import OnomatopoeiaCard, OnomatopoeiaDefinition
 
 # new style Union using a pipe operator
 json_list = list[int] | list[str]
@@ -39,6 +42,8 @@ class DictionaryTableNames(Enum):
     VOCAB_MEANING = "vocab_meaning"
     KANJI_DICTIONARY = "kanji_dictionary"
     RADICAL_DICTIONARY = "radical_dictionary"
+    ONO_DICTIONARY = "ono_dictionary"
+    ONO_DEFINITIONS = "ono_definitions"
 
 
 class DictionaryBase(DeclarativeBase):
@@ -160,6 +165,16 @@ class RadicalDictionaryTable(DictionaryBase):
     reading_r: Mapped[Optional[str]]
     position_j: Mapped[Optional[str]]
     position_r: Mapped[Optional[str]]
+
+
+class OnoDictionaryTable(DictionaryBase):
+    """Table for Onomatopoeia dictionary."""
+
+    __tablename__ = DictionaryTableNames.ONO_DICTIONARY.value
+
+    writing: Mapped[str] = mapped_column(String, primary_key=True, index=True)
+    kana_writing: Mapped[list[str]] = mapped_column(JSON, index=True)
+    definitions: Mapped[list[dict]] = mapped_column(JSON, index=True)
 
 
 class DictionaryManager:
@@ -523,3 +538,66 @@ class DictionaryManager:
             if num_vocab is None:
                 raise RuntimeError("Could not count the vocabulary")
             return num_vocab
+
+    def add_onomatopoeia(self, onomatopoeia: list[dict]) -> None:
+        """Adds Onomatopoeia to database."""
+        with Session(self.engine) as session:
+            for item in onomatopoeia:
+                kana_writing: list[str] = item["hiragana"] + item["katakana"]
+                definitions: list[dict] = item["definition"]
+                literal: str = item["literal"]
+                session.add(
+                    OnoDictionaryTable(
+                        writing=literal,
+                        kana_writing=kana_writing,
+                        definitions=definitions,
+                    )
+                )
+            session.commit()
+
+    def get_ono_by_kana(self, kana: str) -> list[OnomatopoeiaCard]:
+        """Finds onomatopoeia entry by Kana (Hiragana or Katakana).
+
+        Parameters
+        ----------
+        kana: str
+            The kana to search for
+
+        Returns
+        -------
+        list[OnoCard]
+            The list of foun entries as OnoCard
+        """
+        with Session(self.engine) as session:
+            # converting to json string with ensure_ascii=True, because
+            # the database search is dumb and fails to convert the stored data back to utf-8
+            # and the search fails
+            # since the text is stored using unicode escape sequences
+            # the json.dumps converts the search to working format
+            escaped_text = json.dumps(kana, ensure_ascii=True)[1:-1]
+            ono_items = session.scalars(
+                select(OnoDictionaryTable).filter(
+                    cast(OnoDictionaryTable.kana_writing, String).ilike(
+                        f"%{escaped_text}%"
+                    )
+                )
+            )
+
+            cards = [
+                OnomatopoeiaCard(
+                    writing=item.writing,
+                    kana_writing=item.kana_writing,
+                    definitions=[
+                        OnomatopoeiaDefinition(
+                            equivalent=[
+                                AnswerText(answer_text=equivalent)
+                                for equivalent in definition["equivalent"]
+                            ],
+                            meaning=AnswerText(answer_text=definition["meaning"]),
+                        )
+                        for definition in item.definitions
+                    ],
+                )
+                for item in ono_items
+            ]
+            return cards

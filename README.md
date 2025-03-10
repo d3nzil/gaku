@@ -25,6 +25,7 @@ There need to be following files in the `./resources` directory:
 - JMdict_e.xml
 - kanji-radicals.csv
 - kanjidic2.xml
+- j-ono-data.json
 
 ### Setup and run backend
 Requires Python 3.10 or newer: https://python.org
@@ -81,6 +82,10 @@ npm run dev -- --host
 ```
 
 Connect to http://localhost:3000 and you should see Gaku web interface. If not see the log output from backend and frontend for any errors.
+
+### Updating
+**2024-03-10**
+- Added support for Onomatopoeia (sound and other "effects" often found in manga). The dictionary currently doesn't support automatically adding of the vocabulary for these. After adding the Onomatopoeia dictionary into the `resources` it is necessary to recreate the dictionary from scratch. To do so, stop Gaku if it is running. Then rename the existing `userdata/dictionary.db` to `userdata/dictionary.db.bak` (just in case there is problem, so you can restore it easily) and start Gaku again. It should automatically import all the dictionaries, including the Onomatopoeia. To test it, go to the import section of the UI and put `@あっはっはっはっ` (the `@` symbol tells Gaku it's Onomatopoeia) in the vocabulary import text field and click `Generate imports`. The card for it should show in a moment.
 
 ## Note: fsrs mypy error
 Currently the fsrs package is not marked as typed, so mypy fails on it with [import-untyped] error.

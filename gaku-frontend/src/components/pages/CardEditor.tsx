@@ -3,23 +3,23 @@ import Select from 'react-select';
 import api from "../../services/api";
 // import Select from 'react-select';
 import getEntryComponent from '../cards/CardView';
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, MultiCardEntry, CardSource, CardType } from '../../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, MultiCardEntry, OnomatopoeiaCard, CardSource, CardType } from '../../types/CardTypes';
 import { AnswerType } from '../../types/CardTypes';
 
 
 
 type CardTypeOption = { value: CardType, label: string };
 
-const editableTypes = ['VOCABULARY', 'KANJI', 'RADICAL', 'QUESTION'];
-function isEditableType(card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry): card is VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry {
+const editableTypes = ['VOCABULARY', 'KANJI', 'RADICAL', 'QUESTION', "ONOMATOPOEIA"];
+function isEditableType(card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): card is VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard {
     return editableTypes.includes(card.card_type);
 }
 
 
 
 const CardEditor = () => {
-    const [cardInput, setCardInput] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | null>(null);
-    const [cards, setCards] = useState<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry)[]>([]);
+    const [cardInput, setCardInput] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard | null>(null);
+    const [cards, setCards] = useState<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]>([]);
     const [availableSources, setAvailableSources] = useState<CardSource[]>([]);
     const [selectedSources, setSelectedSources] = useState<CardSource[]>([]);
     const [cardType, setCardType] = useState<CardType>(CardType.VOCABULARY);
@@ -44,7 +44,7 @@ const CardEditor = () => {
         cardInputRef.current = cardInput;
     }, [cardInput]);
 
-    const addCard = async (cardData: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry) => {
+    const addCard = async (cardData: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
         const response = await api.addCard(cardData);
         if (response.status === "ok")
         {
@@ -54,7 +54,7 @@ const CardEditor = () => {
         return response;
     };
 
-    const editCard = async (updatedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry) => {
+    const editCard = async (updatedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
         const response = await api.updateCard(updatedCard);
         if (response.status === "ok")
         {
@@ -110,7 +110,7 @@ const CardEditor = () => {
         };
     }, []); // Empty dependency array
 
-    const deleteCard = async (removedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry) => {
+    const deleteCard = async (removedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard) => {
         const response = await api.deleteCard(removedCard);
         if (response.status === "ok")
         {
@@ -119,7 +119,7 @@ const CardEditor = () => {
         }
     };
 
-    const setCardInputValidated = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry) => {
+    const setCardInputValidated = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard) => {
         if (isEditableType(card))
         {
             setCardInput(card);
@@ -172,6 +172,7 @@ const CardEditor = () => {
                                     <option value="VOCABULARY">Vocabulary</option>
                                     <option value="KANJI">Kanji</option>
                                     <option value="RADICAL">Radical</option>
+                                    <option value="ONOMATOPOEIA">Onomatopoeia</option>
                                     <option value="QUESTION">Question</option>
                                 </select>
                                 <button onClick={newCard}>New Card</button>
@@ -263,6 +264,17 @@ const createNewCard = (type: CardType) => {
                 question: '',
                 answers: []
             } as QuestionEntry;
+        case CardType.ONOMATOPOEIA:
+            return {
+                card_id: '',
+                card_type: "ONOMATOPOEIA",
+                note: "",
+                hint: "",
+                writing: '',
+                kana_writing: [""],
+                definitions: [{ meaning: { required: false, answer_text: "" }, equivalent: [{ required: false, answer_text: "" }] }]
+
+            } as OnomatopoeiaCard;
         default:
             return null;
     }

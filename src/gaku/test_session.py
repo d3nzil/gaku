@@ -8,8 +8,9 @@ from typing import Optional, Annotated, TypeVar
 import fsrs
 from pydantic import BaseModel, Field, field_serializer, field_validator, ConfigDict
 
-from .card_types import TestQuestion, TestCardTypes, MultiCard
-from .question import TestAnswer
+from . import card_types
+from .card_types import TestCardTypes
+from .question import TestAnswer, TestQuestion
 from .database import DbManager
 from .api_types import NextCardMessage, TestStatusMessage, CheckResult
 from .config import get_config
