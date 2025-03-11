@@ -7,6 +7,12 @@ So pretty much tool to learn vocabulary for the book, manga...
 # Current status
 **Warning: Very early version. Core functionality should work and be mostly stable, but there are guaranteed to be bugs.**
 
+# Screenshots
+Test selection, dark theme: ![Test selection, dark theme](https://lunaen.com/software/gaku/screenshots/Test_Selection_Dark_Theme.png) 
+
+Testing, light theme
+![Testing, light theme](https://lunaen.com/software/gaku/screenshots/Testing_Light_Theme.png)
+
 # Manual
 [User guide](./docs-user/docs/index.md)
 
