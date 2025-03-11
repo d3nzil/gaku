@@ -32,6 +32,8 @@ const TestFlashcards = () => {
     const [receivedCard, setReceivedCard] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard | MultiCardEntry | null>(null);
     const [showCardInfo, setShowCardInfo] = useState(false);
     const { updateTestSessionStatus } = context;
+    const [cardEdited, setCardEdited] = useState<boolean>(false);
+    const [cardSaved, setCardSaved] = useState<boolean | null>(null);
 
     // header
     const questionHeaderRef = useRef<HTMLStyleElement | null>(null);
@@ -251,6 +253,54 @@ const TestFlashcards = () => {
     };
 
 
+    const editableTypes = ['VOCABULARY', 'KANJI', 'RADICAL', 'QUESTION', "ONOMATOPOEIA"];
+    function isEditableType(card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): card is VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard {
+        return editableTypes.includes(card.card_type);
+    }
+    const setCardInputValidated = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard) => {
+        if (isEditableType(card))
+        {
+            setReceivedCard(card);
+            setCardEdited(true);
+            setCardSaved(false);
+        }
+    }
+
+    const addCard = async (cardData: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
+        const response = await api.addCard(cardData);
+        if (response.status === "ok")
+        {
+            setCardSaved(true);
+            setCardEdited(false);
+        }
+        return response;
+    };
+
+    const editCard = async (updatedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
+        const response = await api.updateCard(updatedCard);
+        if (response.status === "ok")
+        {
+            setCardSaved(true);
+            setCardEdited(false);
+        }
+    };
+
+
+
+    const saveCard = async () => {
+        if (receivedCard && isEditableType(receivedCard))
+        {
+            if (receivedCard.card_id)
+            {
+                await editCard(receivedCard);
+            } else
+            {
+                await addCard(receivedCard);
+            }
+        }
+    };
+
+
     return (
         <div style={{ display: 'flex', justifyContent: 'center', width: "100%" }}>
 
@@ -396,7 +446,9 @@ const TestFlashcards = () => {
                                     padding: '10px'
                                 }}
                             >
-                                {getEntryComponent(receivedCard, () => { })}
+                                {cardEdited ? "*Edited* " : ""}{cardSaved ? "Saved " : ""}
+                                <button onClick={saveCard} disabled={!cardEdited} >Save Card</button>
+                                {getEntryComponent(receivedCard, setCardInputValidated)}
                             </div>
                         )}
                     </div>
