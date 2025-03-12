@@ -5,10 +5,8 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
 
-# import fastapi
-from fastapi import FastAPI, HTTPException
-
-# from fastapi import APIRouter
+import fastapi
+from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -52,8 +50,9 @@ async def startup_teardown(app: FastAPI) -> AsyncGenerator:
 
 
 app = FastAPI(lifespan=startup_teardown)
+api_router = APIRouter(prefix="/api")
 
-# frontend_path = Path(__file__).parent / "gaku-frontend" / "dist"
+frontend_path = Path(__file__).parent / "gaku-frontend" / "dist"
 
 # origins = [
 #     "http://localhost:3000",  # React frontend
@@ -96,7 +95,7 @@ class CardSourceLinkRequest(BaseModel):
 # - edit card
 # - delete card
 # - save cards to file
-@app.get("/cards")
+@api_router.get("/cards")
 async def get_cards() -> list[TestCardTypes]:
     """Get all cards.
     Most recent cards are returned first.
@@ -107,7 +106,7 @@ async def get_cards() -> list[TestCardTypes]:
     return send_cards
 
 
-@app.post("/cards/add")
+@api_router.post("/cards/add")
 async def add_card(card: dict) -> dict:
     """Add card.
 
@@ -132,7 +131,7 @@ async def add_card(card: dict) -> dict:
     return {"status": "ok", "card_id": test_card.card_id}
 
 
-@app.post("/cards/update")
+@api_router.post("/cards/update")
 async def edit_card(card: dict) -> dict:
     """Edit card.
 
@@ -152,7 +151,7 @@ async def edit_card(card: dict) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/cards/delete")
+@api_router.post("/cards/delete")
 async def delete_card(card: BaseCard) -> dict:
     """Delete card."""
     manager.db.delete_card(card.card_id)
@@ -160,7 +159,7 @@ async def delete_card(card: BaseCard) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/cards/get_by_text")
+@api_router.post("/cards/get_by_text")
 async def get_cards_by_text(
     filter: CardFilter,
 ) -> list[TestCardTypes]:
@@ -171,7 +170,7 @@ async def get_cards_by_text(
     return cards
 
 
-@app.post("/cards/add_source_link")
+@api_router.post("/cards/add_source_link")
 async def add_source_link(request: CardSourceLinkRequest) -> dict:
     """Add source link to a card."""
     manager.db.add_card_source_link(request.card_id, request.source_id)
@@ -179,7 +178,7 @@ async def add_source_link(request: CardSourceLinkRequest) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/cards/delete_all_source_links")
+@api_router.post("/cards/delete_all_source_links")
 async def delete_all_source_links(request: CardSourceLinkRequest) -> dict:
     """Delete all source links for a card."""
     manager.db.delete_all_card_source_links(request.card_id)
@@ -187,14 +186,14 @@ async def delete_all_source_links(request: CardSourceLinkRequest) -> dict:
     return {"status": "ok"}
 
 
-# @app.post("/cards/add_source_link")
+# @api_router.post("/cards/add_source_link")
 # async def add_source_link(card_id: str, source_id: str):
 #     """Add source link."""
 #     manager.db.add_card_source_link(card_id, source_id)
 #     return {"status": "ok"}
 
 
-@app.post("/cards/delete_source_link")
+@api_router.post("/cards/delete_source_link")
 async def delete_source_link(request: CardSourceLinkRequest) -> dict:
     """Delete source link."""
     manager.db.delete_card_source_link(request.card_id, request.source_id)
@@ -203,7 +202,7 @@ async def delete_source_link(request: CardSourceLinkRequest) -> dict:
 
 
 # card sources functionality
-@app.get("/sources")
+@api_router.get("/sources")
 async def get_sources() -> list[dict]:
     """Get all card sources."""
     card_sources = [
@@ -213,7 +212,7 @@ async def get_sources() -> list[dict]:
     return card_sources
 
 
-@app.post("/sources/add")
+@api_router.post("/sources/add")
 async def add_source(source: dict) -> dict:
     """Add card source."""
     logging.info(f"Adding source: {source}")
@@ -233,7 +232,7 @@ async def add_source(source: dict) -> dict:
     return {"status": "ok", "source_id": card_source.source_id}
 
 
-@app.post("/sources/update")
+@api_router.post("/sources/update")
 async def update_source(source: dict) -> dict:
     """Update card source."""
     card_source = CardSource(**source)
@@ -242,7 +241,7 @@ async def update_source(source: dict) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/sources/delete")
+@api_router.post("/sources/delete")
 async def delete_source(source: dict) -> dict:
     """Delete card source."""
     logging.info(f"Deleting source: {source}")
@@ -259,7 +258,7 @@ async def delete_source(source: dict) -> dict:
 # - get session status
 
 
-@app.post("/test/start")
+@api_router.post("/test/start")
 async def start_test(request: StartTestRequest) -> dict:
     """Start test session."""
     logging.info(f"Starting test session, params: {request}")
@@ -268,7 +267,7 @@ async def start_test(request: StartTestRequest) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/test/start_new")
+@api_router.post("/test/start_new")
 async def start_test_new(request: StartTestRequest) -> dict:
     """Start test session with new cards."""
     logging.info(f"Starting test session with new cards, params: {request}")
@@ -278,7 +277,7 @@ async def start_test_new(request: StartTestRequest) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/test/num_new")
+@api_router.post("/test/num_new")
 async def get_num_new(request: CardFilter) -> int:
     """Get number of new cards.
 
@@ -297,7 +296,7 @@ async def get_num_new(request: CardFilter) -> int:
     return new_new
 
 
-@app.post("/test/start_studied")
+@api_router.post("/test/start_studied")
 async def start_test_studied(request: StartTestRequest) -> dict:
     """Starts test session with studied cards."""
     logging.info(f"Starting test session with studied cars, params: {request}")
@@ -306,7 +305,7 @@ async def start_test_studied(request: StartTestRequest) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/test/num_studied")
+@api_router.post("/test/num_studied")
 async def get_num_studied(request: CardFilter) -> int:
     """Gets a number matching studied cards."""
 
@@ -315,7 +314,7 @@ async def get_num_studied(request: CardFilter) -> int:
     return num_studied
 
 
-@app.post("/test/num_any_state")
+@api_router.post("/test/num_any_state")
 async def get_num_any_state(request: CardFilter) -> int:
     """Gets a number of cards matching filter independent of FSRS state.
 
@@ -331,7 +330,7 @@ async def get_num_any_state(request: CardFilter) -> int:
     return num_any_state
 
 
-@app.post("/test/start_due")
+@api_router.post("/test/start_due")
 async def start_test_due(request: StartTestRequest) -> dict:
     """Start test session with due cards."""
     logging.info(f"Starting test session with due cards, params: {request}")
@@ -343,7 +342,7 @@ async def start_test_due(request: StartTestRequest) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/test/num_due")
+@api_router.post("/test/num_due")
 async def get_num_due(request: CardFilter) -> int:
     """Get number of due cards."""
     num_due = manager.get_num_due_cards(request)
@@ -358,7 +357,7 @@ class RecentMistakesStartTest(BaseModel):
     time_since: int
 
 
-@app.post("/test/start_recent_mistakes")
+@api_router.post("/test/start_recent_mistakes")
 async def start_test_recent_mistakes(request: RecentMistakesStartTest) -> dict:
     """Start test session with recent mistakes."""
     logging.info(f"Starting test session with recent mistakes, params: {request}")
@@ -378,7 +377,7 @@ class RecentMistakesFilter(BaseModel):
     time_since: int
 
 
-@app.post("/test/num_recent_mistakes_since")
+@api_router.post("/test/num_recent_mistakes_since")
 async def get_num_recent_mistakes_since(request: RecentMistakesFilter) -> int:
     """Get recent mistakes stats."""
     logging.info(f"Getting recent mistakes stats, params: {request}")
@@ -389,7 +388,7 @@ async def get_num_recent_mistakes_since(request: RecentMistakesFilter) -> int:
     return recent_mistakes
 
 
-@app.post("/test/practice_failed_cards")
+@api_router.post("/test/practice_failed_cards")
 async def practice_failed_cards() -> dict:
     """Practice failed cards from the last test session."""
     if manager.test_session is None:
@@ -399,7 +398,7 @@ async def practice_failed_cards() -> dict:
     return {"status": "ok"}
 
 
-@app.post("/test/practice_all_cards")
+@api_router.post("/test/practice_all_cards")
 async def practice_all_cards() -> dict:
     """Practice all cards from the last test session."""
     if manager.test_session is None:
@@ -409,7 +408,7 @@ async def practice_all_cards() -> dict:
     return {"status": "ok"}
 
 
-@app.get("/test/session_active")
+@api_router.get("/test/session_active")
 async def get_session_active() -> dict:
     """Get test session status."""
     session_active = manager.get_session_active()
@@ -417,7 +416,7 @@ async def get_session_active() -> dict:
     return {"session_active": session_active}
 
 
-@app.get("/test/next")
+@api_router.get("/test/next")
 async def get_next_card() -> NextCardMessage:
     """Get next card."""
     if manager.test_session is None:
@@ -430,7 +429,7 @@ async def get_next_card() -> NextCardMessage:
     return next_card
 
 
-# @app.get("/test/wrap_up")
+# @api_router.get("/test/wrap_up")
 # async def wrapup_test() -> dict:
 #     """Wrap up test session."""
 #     if not manager.get_session_active():
@@ -446,7 +445,7 @@ class AnswerMessage(BaseModel):
     answer: TestAnswer
 
 
-@app.post("/test/check_answer")
+@api_router.post("/test/check_answer")
 async def check_answer(answer_message: AnswerMessage) -> dict:
     """Check answer without answering it."""
     if manager.test_session is None:
@@ -456,7 +455,7 @@ async def check_answer(answer_message: AnswerMessage) -> dict:
     return {"status": "ok", "answer_is_correct": answer_is_correct}
 
 
-@app.post("/test/answer_question")
+@api_router.post("/test/answer_question")
 async def answer_question(answer_message: AnswerMessage) -> dict:
     """Answer question."""
     if manager.test_session is None:
@@ -465,7 +464,7 @@ async def answer_question(answer_message: AnswerMessage) -> dict:
     return {"status": "ok", "answer_is_correct": answer_is_correct}
 
 
-@app.post("/test/mark_correct")
+@api_router.post("/test/mark_correct")
 async def mark_correct(answer: dict) -> dict:
     """Mark question as correct."""
     if manager.test_session is None:
@@ -493,7 +492,7 @@ async def mark_correct(answer: dict) -> dict:
     return {"status": "ok"}
 
 
-@app.post("/test/mark_mistake")
+@api_router.post("/test/mark_mistake")
 async def mark_mistake(answer: dict) -> dict:
     """Mark question as a mistake."""
     if manager.test_session is None:
@@ -522,7 +521,7 @@ async def mark_mistake(answer: dict) -> dict:
     return {"status": "ok"}
 
 
-@app.get("/test/results")
+@api_router.get("/test/results")
 async def get_test_results() -> dict:
     """Get test results."""
     if manager.test_session is None:
@@ -532,7 +531,7 @@ async def get_test_results() -> dict:
     return test_results
 
 
-@app.get("/test/status")
+@api_router.get("/test/status")
 async def get_test_status() -> TestStatusMessage:
     """Get test status."""
     if manager.test_session is None:
@@ -542,7 +541,7 @@ async def get_test_status() -> TestStatusMessage:
     return test_status
 
 
-@app.get("/test/is_practice")
+@api_router.get("/test/is_practice")
 async def get_is_practice() -> bool:
     """Get test status."""
     if manager.test_session is None:
@@ -552,7 +551,7 @@ async def get_is_practice() -> bool:
     return is_practice
 
 
-@app.post("/vocab/generate_vocab_import")
+@api_router.post("/vocab/generate_vocab_import")
 async def generate_vocab_import(import_data: dict) -> GeneratedImports:
     """Generate cards for vocabulary list."""
     vocab = import_data["vocab"]
@@ -561,7 +560,7 @@ async def generate_vocab_import(import_data: dict) -> GeneratedImports:
     return generated_imports
 
 
-@app.post("/vocab/import_cards")
+@api_router.post("/vocab/import_cards")
 async def import_vocab_cards(import_data: ImportRequest) -> dict:
     """Import cards."""
     logging.info(f"Importing {len(import_data.cards.generated_cards)} cards")
@@ -570,7 +569,7 @@ async def import_vocab_cards(import_data: ImportRequest) -> dict:
 
 
 # stats
-@app.get("/stats/num_due")
+@api_router.get("/stats/num_due")
 async def get_num_due_stats() -> dict[int, int]:
     """Get due stats."""
     due_stats = manager.get_num_upcoming_cards()
@@ -578,7 +577,7 @@ async def get_num_due_stats() -> dict[int, int]:
     return due_stats
 
 
-@app.get("/stats/num_recent_mistakes")
+@api_router.get("/stats/num_recent_mistakes")
 async def get_num_recent_mistakes() -> dict[int, int]:
     """Get recent mistakes stats."""
     recent_mistakes = manager.get_num_recent_mistakes()
@@ -586,25 +585,28 @@ async def get_num_recent_mistakes() -> dict[int, int]:
     return recent_mistakes
 
 
-# app.mount("/", StaticFiles(directory=frontend_path, html=True), name="gaku")
+app.include_router(router=api_router)
 
-# router = APIRouter()
+# add access to frontend
+if frontend_path.exists():
+    frontend_router = APIRouter()
 
+    @frontend_router.get("/{path:path}")
+    async def frontend_handler(path: str) -> fastapi.responses.FileResponse:
+        """Handles React frontend requests.
 
-# @router.get("/{path:path}")
-# async def frontend_handler(path: str) -> fastapi.responses.FileResponse:
-#     """Handles React frontend requests
+        Parameters
+        ----------
+        path: str
+            Requested path
 
-#     Parameters
-#     ----------
-#     path: str
-#         Requested path
+        Returns
+        -------
+        fastapi.responses.FileResponse
+        """
+        fp = frontend_path / path
+        if not fp.exists() or fp.is_dir():
+            fp = frontend_path / "index.html"
+        return fastapi.responses.FileResponse(fp)
 
-#     Returns
-#     -------
-#     fastapi.responses.FileResponse
-#     """
-#     fp = frontend_path / path
-#     if not fp.exists():
-#         fp = frontend_path / "index.html"
-#     return fastapi.responses.FileResponse(fp)
+    app.include_router(frontend_router)

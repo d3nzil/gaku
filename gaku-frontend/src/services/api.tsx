@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, AnswerResult, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard } from '../types/CardTypes';
 
-const apiUrl = "http://localhost:8000";
+const apiUrl = "http://localhost:8000/api";
+
 
 // card editor API methods
 const getCards = (): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
