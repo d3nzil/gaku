@@ -1,6 +1,7 @@
 """FastAPI service for testing japanese flashcards."""
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
@@ -54,27 +55,15 @@ api_router = APIRouter(prefix="/api")
 
 frontend_path = Path(__file__).parent / "gaku-frontend" / "dist"
 
-# origins = [
-#     "http://localhost:3000",  # React frontend
-#     "http://localhost:8000",  # FastAPI backend (if needed)
-#     "http://10.168.1.156:8000",
-#     "http://100.85.151.9:8000",
-#     "http://100.106.180.54:8000",
-#     "http://10.168.1.156",
-#     "http://100.85.151.9",
-#     "http://100.106.180.54",
-# ]
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    # allow_origins=origins,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if os.getenv("API_DEV", "0") == "1":
+    # allow anything - dev use only
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 class CardSourceLinkRequest(BaseModel):
