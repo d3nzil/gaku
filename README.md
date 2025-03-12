@@ -36,6 +36,7 @@ There need to be following files in the `./resources` directory:
 ### Setup and run backend
 Requires Python 3.10 or newer: https://python.org
 
+#### Setup backend
 Setup - Linux:
 ```sh
 python3 -m venv venv
@@ -52,13 +53,42 @@ pip install -e .
 pip install -r requirements.txt
 ```
 
-If you need to use different port for backend, edit the `main.py` file and modify the `origins` variable. Same if you changed the frontend port.
+#### Running backend
+Before running Gaku, it is recommended to proceed with Gaku frontend setup.
 
-Running - requires active venv (run the line with `activate` from setup):
+Running Gaku requires active venv (run the line with `activate` from setup):
 ```sh
-uvicorn main:app --port 8000 --host 127.0.0.1 --reload
+uvicorn main:app --port 8000 --host 127.0.0.1
 ```
 
+Note that first run will import all dictionary data, so the start might take few minutes.
+
+If you want to run Gaku on different computer, then you need to change the `--host` parameter to `--host 0.0.0.0`, so the whole command becomes
+
+```sh
+uvicorn main:app --port 8000 --host 0.0.0.0
+```
+
+**!!!Be warned that Gaku is not ready to be exposed to internet and could cause bad people to steal data, money or even something worse!!!** 
+
+If you want to access Gaku from away, it is best to setup private VPN like Tailscale for that (a guide will be added later).
+
+
+#### Running backend for Gaku development
+When developing Gaku, it might be easier to run frontend and backend separately. For that you need to set the `API_DEV=1` to allow CORS from any source and `--reload` to automatically reload changed Python code.
+
+Using both - Windows:
+```
+set "API_DEV=1" && uvicorn main:app --reload
+```
+
+Using both - Linux:
+```
+API_DEV=1 uvicorn main:app --reload  # CORS enabled, hot reload
+```
+
+
+### After first running of backend
 After running Gaku for the first time, it is necessary to also run Alembic (which takes care of database upgrades) to ensure it can upgrade the database correctly in the future. This needs to be done in active venv.
 ```sh
 alembic upgrade head
@@ -72,8 +102,11 @@ Setup:
 ```sh
 cd gaku-frontend
 npm install
+npm build dev
 ```
+After this step and running the backed, you should have everything ready to use Gaku.
 
+### Running frontend for Gaku development
 Running - for local access only:
 ```sh
 cd gaku-frontend
@@ -87,10 +120,16 @@ Running - for access from other computers, phone:
 npm run dev -- --host
 ```
 
-Connect to http://localhost:3000 and you should see Gaku web interface. If not see the log output from backend and frontend for any errors.
+### Opening Gaku in browser
+Enter address http://localhost:8000 in your browser (Firefox, Chrome...) and you should see Gaku web interface. If not see the log output from backend and frontend for any errors.
+
+Note that when developing Gaku and running the frontend using `npm run dev`, the address changes to http://localhost:3000
 
 ### Updating
-**2024-03-10**
+**2025-03-12**
+Updated the Gaku, so the uvicorn can also serve the frontend, simplifying running it a quite bit. This also means the address to access Gaku changes to http://localhost:8000
+
+**2025-03-10**
 - Added support for Onomatopoeia (sound and other "effects" often found in manga). The dictionary currently doesn't support automatically adding of the vocabulary for these. After adding the Onomatopoeia dictionary into the `resources` it is necessary to recreate the dictionary from scratch. To do so, stop Gaku if it is running. Then rename the existing `userdata/dictionary.db` to `userdata/dictionary.db.bak` (just in case there is problem, so you can restore it easily) and start Gaku again. It should automatically import all the dictionaries, including the Onomatopoeia. To test it, go to the import section of the UI and put `@あっはっはっはっ` (the `@` symbol tells Gaku it's Onomatopoeia) in the vocabulary import text field and click `Generate imports`. The card for it should show in a moment.
 
 ## Note: fsrs mypy error
