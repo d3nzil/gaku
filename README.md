@@ -22,7 +22,7 @@ Currently this is the only option until I figure out how to package it nicely. D
 Any operating system that can run Python 3.10, the required libraries and Node should work. Tested primarily on Debian Linux and lightly on Windows.
 
 ### Warning before you start
-While I use Gaku daily and I did my best to ensure it won't eat your data, it is in early stages and it might break in unexpected ways. So make sure you backup the `./userdata` folder regularly (this is where all your learning related data are). If things break, try reporting a bug, but be warned Gaku is made in my spare time I might not be able to help you.
+While I use Gaku daily and I did my best to ensure it won't eat your data, it is in early stages, and it might break in unexpected ways. So make sure you back up the `./userdata` folder regularly (this is where all your learning related data are). If things break, try reporting a bug, but be warned Gaku is made in my spare time I might not be able to help you.
 
 ### Download dictionaries
 See the [resources/resources_info.txt](./resources/resources_info.txt) to see where download the dictionaries needed to run Gaku.
@@ -102,7 +102,7 @@ Setup:
 ```sh
 cd gaku-frontend
 npm install
-npm build dev
+npm run build
 ```
 After this step and running the backed, you should have everything ready to use Gaku.
 
@@ -113,12 +113,15 @@ cd gaku-frontend
 npm run dev
 ```
 
-Running - for access from other computers, phone:
-- edit gaku-frontend/src/services/api.tsx
-- change apiUrl from localhost to the desired IP/URL
+When developing, for access from other computers or phone you need to:
+- create `.env.local` file in `gaku-frontend/`
+- add line with desired URL: `VITE_APP_API_URL=http://192.168.1.1:8000/api`
+- then you can run the frontend:
 ```sh
 npm run dev -- --host
 ```
+
+Note that you also need to run the uvicorn with `API_DEV=1` (as described above) for this to work.
 
 ### Opening Gaku in browser
 Enter address http://localhost:8000 in your browser (Firefox, Chrome...) and you should see Gaku web interface. If not see the log output from backend and frontend for any errors.
@@ -127,7 +130,7 @@ Note that when developing Gaku and running the frontend using `npm run dev`, the
 
 ### Updating
 **2025-03-12**
-Updated the Gaku, so the uvicorn can also serve the frontend, simplifying running it a quite bit. This also means the address to access Gaku changes to http://localhost:8000
+Updated the Gaku, so the uvicorn can also serve the frontend, simplifying running it quite a bit. This also means the address to access Gaku changes to http://localhost:8000
 
 **2025-03-10**
 - Added support for Onomatopoeia (sound and other "effects" often found in manga). The dictionary currently doesn't support automatically adding of the vocabulary for these. After adding the Onomatopoeia dictionary into the `resources` it is necessary to recreate the dictionary from scratch. To do so, stop Gaku if it is running. Then rename the existing `userdata/dictionary.db` to `userdata/dictionary.db.bak` (just in case there is problem, so you can restore it easily) and start Gaku again. It should automatically import all the dictionaries, including the Onomatopoeia. To test it, go to the import section of the UI and put `@あっはっはっはっ` (the `@` symbol tells Gaku it's Onomatopoeia) in the vocabulary import text field and click `Generate imports`. The card for it should show in a moment.
@@ -135,7 +138,7 @@ Updated the Gaku, so the uvicorn can also serve the frontend, simplifying runnin
 ## Note: fsrs mypy error
 Currently the fsrs package is not marked as typed, so mypy fails on it with [import-untyped] error.
 
-To fix it create py.typed file inside of the frsr module, for example:
+To fix it create py.typed file inside the folder of frsr module, for example:
 ```
 touch venv/lib64/python3.11/site-packages/fsrs/py.typed
 ```
@@ -160,8 +163,8 @@ touch venv/lib64/python3.11/site-packages/fsrs/py.typed
 
 # Nice to have
 - dictionary lookup
-    - japanese (online, probably jisho.org)
-    - english (online, probably wiktionary)
+    - Japanese (online, probably jisho.org)
+    - English (online, probably Wiktionary)
 
 - documentation (required for V1 release)
     - https://diataxis.fr/
