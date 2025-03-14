@@ -103,6 +103,8 @@ resources/www/
 resources/kanji-radicals.csv
 resources/kanjidic2.xml
 resources/JMdict_e.xml
+resources/j-ono-data.json
+resources/dictionary.db
 
 # temp stuff
 tmp/
