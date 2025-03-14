@@ -26,3 +26,7 @@ mkdocs
 
 # For testing
 pytest
+
+# for building the Gaku packages
+pyinstaller
+pillow

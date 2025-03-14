@@ -2,6 +2,7 @@
 
 import logging
 import os
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
@@ -32,8 +33,25 @@ from gaku.question import TestAnswer
 logging.basicConfig(level=logging.INFO)
 
 
-# load cards from file
-manager = GakuManager(Path(__file__).parent / "userdata")
+# get the working directory
+if getattr(sys, "frozen", False):
+    # running in pyinstaller bundle
+    app_dir = Path(sys._MEIPASS)  # type: ignore
+    logging.info(str(app_dir.resolve()))
+    # since the pyinstaller will have main dir in _
+    userdata_dir = app_dir.parent / "userdata"
+else:
+    # normal Python environment
+    app_dir = Path(__file__).parent
+    userdata_dir = app_dir / "userdata"
+
+
+# set gaku data locations
+resource_dir = app_dir / "resources"
+frontend_path = resource_dir / "www"
+
+
+manager = GakuManager(app_dir)
 
 
 @asynccontextmanager
@@ -52,8 +70,6 @@ async def startup_teardown(app: FastAPI) -> AsyncGenerator:
 
 app = FastAPI(lifespan=startup_teardown)
 api_router = APIRouter(prefix="/api")
-
-frontend_path = Path(__file__).parent / "gaku-frontend" / "dist"
 
 if os.getenv("API_DEV", "0") == "1":
     # allow anything - dev use only

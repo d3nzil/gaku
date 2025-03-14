@@ -3,6 +3,7 @@
 import datetime
 import json
 import logging
+import shutil
 from pathlib import Path
 from typing import Optional
 
@@ -47,24 +48,43 @@ from .api_types import (
 class GakuManager:
     """Manages all the Gaku functionality."""
 
-    def __init__(self, workdir: Path, resource_dir: Optional[Path] = None) -> None:
-        self.workdir = workdir
-        self.resource_dir = resource_dir or Path("resources")
-        workdir.mkdir(exist_ok=True, parents=True)
+    def __init__(self, workdir: Path, userdata: Path) -> None:
+        self.userdata = userdata
+        self.userdata.mkdir(exist_ok=True)
+        self.resource_dir = workdir / "resources"
+        if not self.resource_dir.exists():
+            # TODO: validate all expected files on startup
+            logging.error(
+                f"The directory with resources does not exist: {str(self.resource_dir.resolve())}"
+            )
+            logging.error("Exiting")
+            exit(-1)
 
-        self.db_file: Path = workdir / "cards.db"
+        self.db_file: Path = self.userdata / "cards.db"
         self.db_connection: str = f"sqlite:///{str(self.db_file.resolve())}"
+        logging.info(f"Userdata db connection: {self.db_connection}")
         self.db: DbManager = DbManager(self.db_connection)
+        logging.info(
+            f"Userdata {str(self.db_file.resolve())} exists: {self.db_file.exists()}"
+        )
         if not self.db_file.exists():
+            logging.info("Userdata not found, creating new")
             self.db.create_database()
 
         self.test_session: Optional[TestSession] = None
 
-        self.db_dictionary_file = workdir / "dictionary.db"
+        self.db_dictionary_file = self.resource_dir / "dictionary.db"
         dictionary_exists = self.db_dictionary_file.exists()
-        self.dictionary: DictionaryManager = DictionaryManager(
-            f"sqlite:///{str(self.db_dictionary_file.resolve())}"
-        )
+        if not dictionary_exists:
+            old_dict = self.userdata / "dictionary.db"
+            if old_dict.exists():
+                logging.info("Found dictionary in old location, moving to resources")
+                shutil.move(old_dict, self.db_dictionary_file)
+                dictionary_exists = self.db_dictionary_file.exists()
+
+        db_path = f"sqlite:///{str(self.db_dictionary_file.resolve())}"
+        logging.info(f"DB path: {db_path}")
+        self.dictionary: DictionaryManager = DictionaryManager(db_path)
         if not dictionary_exists:
             self.create_dictionary_db()
 
@@ -880,11 +900,11 @@ class GakuManager:
             logging.info("No test session to save")
             return
 
-        session_file = self.workdir / "test_session.json"
+        session_file = self.userdata / "test_session.json"
 
         if session_file.exists():
             session_file.rename(
-                self.workdir
+                self.userdata
                 / f"test_session_backup_{datetime.datetime.now().isoformat()}.json"
             )
             logging.warning("Old test session file found, renamed to backup")
@@ -894,14 +914,14 @@ class GakuManager:
 
         # keep at most 5 backups
         backup_files = sorted(
-            self.workdir.glob("test_session_backup_*.json"), reverse=True
+            self.userdata.glob("test_session_backup_*.json"), reverse=True
         )
         for backup_file in backup_files[5:]:
             backup_file.unlink()
 
     def load_test_session(self) -> None:
         """Loads test session from saved file."""
-        session_file = self.workdir / "test_session.json"
+        session_file = self.userdata / "test_session.json"
 
         if not session_file.exists():
             # if there is no session file do nothing
@@ -915,7 +935,7 @@ class GakuManager:
 
     def clear_saved_test_session(self) -> None:
         """Deletes test session file."""
-        session_file = self.workdir / "test_session.json"
+        session_file = self.userdata / "test_session.json"
 
         if session_file.exists():
             session_file.unlink()
