@@ -38,7 +38,9 @@ from gaku.card_types import (
 from gaku.question import TestAnswer
 
 logging.basicConfig(level=logging.INFO)
-
+# fix for multiprocessing on Windows
+if sys.platform == "win32":
+    multiprocessing.set_start_method("spawn")
 
 # get the working directory
 if getattr(sys, "frozen", False):
@@ -660,6 +662,7 @@ def open_gaku_in_browser(url: str) -> None:
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     parser = argparse.ArgumentParser(
         description="Gaku - Japanese vocabulary learning program"
     )
