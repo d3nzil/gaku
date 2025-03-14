@@ -1,11 +1,18 @@
 """FastAPI service for testing japanese flashcards."""
 
+import argparse
 import logging
 import os
 import sys
+import multiprocessing
+import time
+import uvicorn
+import urllib.request
+import webbrowser
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
+from urllib.error import URLError
 
 import fastapi
 from fastapi import FastAPI, HTTPException, APIRouter
@@ -51,7 +58,7 @@ resource_dir = app_dir / "resources"
 frontend_path = resource_dir / "www"
 
 
-manager = GakuManager(app_dir)
+manager = GakuManager(workdir=app_dir, userdata=userdata_dir)
 
 
 @asynccontextmanager
@@ -615,3 +622,70 @@ if frontend_path.exists():
         return fastapi.responses.FileResponse(fp)
 
     app.include_router(frontend_router)
+
+
+def open_gaku_in_browser(url: str) -> None:
+    """Opens Gaku in browser after it starts.
+
+    Paramters
+    ---------
+    url: str
+        Url where the Gaku frontend is available.
+    """
+    max_retries = 300
+    retry_delay = 1
+
+    if url == "":
+        print("URL not provided, will not open browser")
+        return
+
+    if url in ["0.0.0.0", "::/0", "0000:0000:0000:0000:0000:0000:0000:0000/0"]:
+        url = "localhost"
+
+    if not url.startswith("http"):
+        url = f"http://{url}"
+
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(url, timeout=2) as response:
+                if response.status == 200:
+                    logging.info("Gaku is up and running, opening browser")
+                    webbrowser.open(url)
+                    return
+        except URLError as e:
+            print(f"Server not ready yet, attempt {attempt}/{max_retries}")
+            time.sleep(retry_delay)
+
+    logging.warning("Failed to open browser, Gaku was not ready in time")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Gaku - Japanese vocabulary learning program"
+    )
+    parser.add_argument(
+        "--listen", type=str, help="IP address to listen on", default="127.0.0.1"
+    )
+    parser.add_argument(
+        "--port", type=int, help="port to listen to, e.g. 8080", default=8000
+    )
+    parser.add_argument(
+        "-nb",
+        "--no-browser",
+        action="store_true",
+        help="Disable automatic opening of a browser",
+        default=False,
+    )
+    args = parser.parse_args()
+
+    host_url = args.listen
+    host_port = args.port
+
+    browser_open_process = multiprocessing.Process(
+        target=open_gaku_in_browser, kwargs={"url": f"{host_url}:{host_port}"}
+    )
+    if not args.no_browser:
+        browser_open_process.start()
+
+    uvicorn.run(app, host=host_url, port=host_port)
+    browser_open_process.terminate()
