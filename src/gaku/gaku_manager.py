@@ -7,6 +7,9 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
+from alembic.config import Config
+from alembic import command
+
 from . import utils
 from . import card_types
 from .database import DbManager
@@ -67,9 +70,18 @@ class GakuManager:
         logging.info(
             f"Userdata {str(self.db_file.resolve())} exists: {self.db_file.exists()}"
         )
+
+        alembic_cfg = Config(workdir / "alembic.ini")
+        alembic_dir = workdir / "alembic"
+        alembic_cfg.set_main_option("script_location", str(alembic_dir.resolve()))
+        alembic_cfg.set_main_option("sqlalchemy.url", self.db_connection)
         if not self.db_file.exists():
             logging.info("Userdata not found, creating new")
             self.db.create_database()
+            command.stamp(alembic_cfg, "head")
+        else:
+            logging.info("Userdata found, checking for migrations")
+            command.upgrade(alembic_cfg, "head")
 
         self.test_session: Optional[TestSession] = None
 
