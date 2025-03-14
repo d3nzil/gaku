@@ -1,0 +1,1 @@
+pyinstaller --name=gaku --add-data "./resources:resources" --add-data "./alembic:alembic" --add-data "./alembic.ini:." --hidden-import=alembic --additional-hooks-dir=. main.py -i icon.png
