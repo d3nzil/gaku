@@ -97,6 +97,7 @@ package-lock.json
 # resources
 cards.json
 userdata/
+resources/www/
 
 # dictionaries
 resources/kanji-radicals.csv
