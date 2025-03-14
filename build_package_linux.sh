@@ -8,5 +8,5 @@ set -e
 set -o pipefail
 
 # build the pyinstaller package
-pyinstaller --name=gaku --add-data "./resources:resources" --add-data "./alembic:alembic" --hidden-import=alembic --additional-hooks-dir=. main.py -i gaku-frontend/public/icon.svg 
+pyinstaller --name=gaku --add-data "./resources:resources" --add-data "./alembic:alembic" --add-data "./alembic.ini:." --hidden-import=alembic --additional-hooks-dir=. main.py -i gaku-frontend/public/icon.svg
 
