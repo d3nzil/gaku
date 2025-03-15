@@ -691,4 +691,7 @@ if __name__ == "__main__":
         browser_open_process.start()
 
     uvicorn.run(app, host=host_url, port=host_port)
-    browser_open_process.terminate()
+
+    if not args.no_browser:
+        # terminate opening browser if it is still active
+        browser_open_process.terminate()
