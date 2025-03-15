@@ -7,6 +7,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).parent.parent
 
 
+def build_docs() -> None:
+    """Builds the user documentation."""
+    command: list[str] = ["mkdocs", "build"]
+    subprocess.run(command, cwd=REPO_ROOT / "docs-user")
+
+
 def build_pyinstaller() -> None:
     """Builds the pyinstaller package."""
     command: list[str] = [
@@ -41,5 +47,9 @@ def copy_vocab() -> None:
 
 
 if __name__ == "__main__":
+    # pre-build steps
+    build_docs()
+    # package build
     build_pyinstaller()
+    # post build steps
     copy_vocab()
