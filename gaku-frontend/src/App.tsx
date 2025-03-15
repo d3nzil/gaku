@@ -13,10 +13,10 @@ function App() {
     <Router>
       <Navigation />
       <Routes>
-        <Route path="/" element={<CardEditor />} /> {/* Default route */}
+        <Route path="/cards" element={<CardEditor />} /> {/* Default route */}
         <Route path="/source" element={<SourcesEditor />} />
         {/* <Route path="/edit" element={<EditFlashcards />} /> */}
-        <Route path="/select-test" element={<SelectTest />} />
+        <Route path="/" element={<SelectTest />} />
         <Route path="/test" element={<TestFlashcards />} />
         <Route path="/results" element={<DisplayResults />} />
         <Route path="/import" element={<ImportTool />} />

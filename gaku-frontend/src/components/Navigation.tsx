@@ -31,7 +31,7 @@ const Navigation = () => {
                     )}
 
                     <b> </b>
-                    <Link to="/">Cards</Link>
+                    <Link to="/cards">Cards</Link>
                     <b> | </b>
                     <Link to="/multi">Multi Cards</Link>
                     <b> | </b>
@@ -39,7 +39,7 @@ const Navigation = () => {
                     <b> | </b>
                     <Link to="/import">Import</Link>
                     <b> | </b>
-                    <Link to="/select-test">Select Test</Link>
+                    <Link to="/">Select Test</Link>
                     {context.testSessionActive && (<>
                         <b> | </b>
                         <Link to="/test">Continue Test</Link>
