@@ -233,7 +233,7 @@ class Answer(BaseModel):
         logging.info(f"Correct answers: {expected_answers}")
 
         return received_answers.issubset(expected_answers), list(
-            expected_answers - received_answers
+            received_answers - expected_answers
         )
 
 
