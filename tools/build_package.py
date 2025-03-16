@@ -95,7 +95,7 @@ def package_build() -> None:
 
     subprocess.run(command, cwd=DIST_DIR, check=True)
     pkg = Path(DIST_DIR) / pkg_name
-    pkg.rename(DIST_DIR / f"{base_name}_{version}{pkg.suffix}")
+    pkg.rename(DIST_DIR / f"{pkg.stem}_{version}{pkg.suffix}")
 
 
 def copy_license() -> None:
