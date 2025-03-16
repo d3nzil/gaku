@@ -15,13 +15,13 @@ DIST_DIR = REPO_ROOT / "dist"
 def build_frontend() -> None:
     """Builds Gaku frontend."""
     command: list[str] = ["npm", "run", "build"]
-    subprocess.run(command, cwd=REPO_ROOT / "gaku-frontend")
+    subprocess.run(command, cwd=REPO_ROOT / "gaku-frontend", shell=True, check=True)
 
 
 def build_docs() -> None:
     """Builds the user documentation."""
     command: list[str] = ["mkdocs", "build"]
-    subprocess.run(command, cwd=REPO_ROOT / "docs-user")
+    subprocess.run(command, cwd=REPO_ROOT / "docs-user", check=True)
 
 
 def build_pyinstaller() -> None:
@@ -48,7 +48,7 @@ def build_pyinstaller() -> None:
         "-i",
         "icon.png",
     ]
-    subprocess.run(command, cwd=REPO_ROOT)
+    subprocess.run(command, cwd=REPO_ROOT, check=True)
 
 
 def copy_vocab() -> None:
@@ -60,7 +60,7 @@ def copy_vocab() -> None:
 def package_build() -> None:
     """Creates platform appropriate package."""
 
-    version = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    version = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     base_name = "gaku"
     if sys.platform == "win32":
@@ -91,7 +91,7 @@ def package_build() -> None:
         print("Unsupported platform, skipping creating package archive")
         return
 
-    subprocess.run(command, cwd=DIST_DIR)
+    subprocess.run(command, cwd=DIST_DIR, check=True)
     pkg = Path(DIST_DIR) / pkg_name
     pkg.rename(DIST_DIR / f"{base_name}_{version}{pkg.suffix}")
 
