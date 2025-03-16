@@ -8,16 +8,19 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
 DIST_DIR = REPO_ROOT / "dist"
+IS_WINDOWS = sys.platform == "win32"
 
 
 def build_frontend() -> None:
     """Builds Gaku frontend."""
     command_install: list[str] = ["npm", "install"]
     subprocess.run(
-        command_install, cwd=REPO_ROOT / "gaku-frontend", shell=True, check=True
+        command_install, cwd=REPO_ROOT / "gaku-frontend", shell=IS_WINDOWS, check=True
     )
     command: list[str] = ["npm", "run", "build"]
-    subprocess.run(command, cwd=REPO_ROOT / "gaku-frontend", shell=True, check=True)
+    subprocess.run(
+        command, cwd=REPO_ROOT / "gaku-frontend", shell=IS_WINDOWS, check=True
+    )
 
 
 def build_docs() -> None:
