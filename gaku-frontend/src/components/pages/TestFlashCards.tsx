@@ -119,7 +119,7 @@ const TestFlashcards = () => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-        if (e.key === 'Enter' || e.key === 'Tab')
+        if (e.key === 'Enter')
         {
             if (e.ctrlKey)
             {
@@ -134,7 +134,6 @@ const TestFlashcards = () => {
                 } else
                 {
                     submitInputRef.current?.focus();
-                    checkAnswerIsCorrect();
                 }
             }
         }
@@ -351,6 +350,7 @@ const TestFlashcards = () => {
                             <input
                                 ref={submitInputRef}
                                 style={{ position: 'absolute', left: '-99999px' }}
+                                onFocus={checkAnswerIsCorrect}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter')
                                     {
