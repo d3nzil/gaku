@@ -59,6 +59,9 @@ const IMEInput = React.forwardRef<HTMLInputElement, IMEInputProps>(
                     onKeyDown={onKeyDown}
                     style={{ flexGrow: 1 }}
                     lang="ja"
+                    autoCorrect='off'
+                    autoComplete='off'
+                    spellCheck="false"
                 />
                 <input
                     type="button"
