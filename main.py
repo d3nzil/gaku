@@ -622,6 +622,8 @@ if frontend_path.exists():
         """
         fp = frontend_path / path
         if not fp.exists() or fp.is_dir():
+            fp = fp / "index.html"
+        if not fp.exists():
             fp = frontend_path / "index.html"
         return fastapi.responses.FileResponse(fp)
 
