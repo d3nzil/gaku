@@ -1,7 +1,7 @@
 # Gaku
 
 # Long term goal
-To have a tool for learning Japanese vocabulary, kanji and radicals, where the flashcards would be ordered based on some manga, book, article, etc.
+To have a tool for learning Japanese vocabulary, kanji, radicals and onomatopoeia, where the flashcards would be ordered based on some manga, book, article, etc.
 So pretty much tool to learn vocabulary for the book, manga...
 
 # Current status
@@ -23,7 +23,8 @@ Testing, light theme
 ## Running Gaku
 Gaku is pre-packaged for Windows and 64bit Linux. It should be possible to run it on other operating systems as long as they support Python and necessary libraries, but you need to follow the developer documentation for that.
 
-### TODO: Downloading Gaku
+### Downloading Gaku
+You can download pre-packaged version of Gaku from: https://lunaen.com/software/gaku/
 
 ### Warning before you start
 While I use Gaku daily, and I did my best to ensure it won't eat your data, it is in early stages, and it might break in unexpected ways. So make sure you back up the `./userdata` folder regularly (this is where all your learning related data are). If things break, try reporting a bug, but be warned Gaku is made in my spare time I might not be able to help you.
@@ -54,7 +55,7 @@ To run Gaku in a way that it can be accessed from other computer you need to:
     - if this fails, check your firewall and maybe try changing port in case something else used it already (e.g. port 8111 is probably free: `./gaku --listen 0.0.0.0 --port 8111 -nb`)
 
 ### Opening Gaku in browser
-Enter address http://localhost:8000 in your browser (Firefox, Chrome...) and you should see Gaku web interface. If not see the log output from backend and frontend for any errors.
+Enter address http://localhost:8000 in your browser (Firefox, Chrome...) and you should see Gaku web interface. If not, see the log output from backend and frontend for any errors.
 
 Note that when developing Gaku and running the frontend using `npm run dev`, the address changes to http://localhost:3000
 
