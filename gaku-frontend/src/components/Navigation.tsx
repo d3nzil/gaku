@@ -30,9 +30,9 @@ const Navigation = () => {
                         <a href="#" onClick={toggleTheme}>🌙</a>
                     )}
 
-                    <b> </b>
+                    <b> | </b>
                     <a href='./documentation/index.html' target='_blank' rel='noopener noreferrer'>Docs</a>
-                    <b> </b>
+                    <b> | </b>
                     <Link to="/cards">Cards</Link>
                     <b> | </b>
                     <Link to="/multi">Multi Cards</Link>
