@@ -100,7 +100,7 @@ def package_build() -> None:
 
 def copy_license() -> None:
     """Copies license file to the build directory."""
-    shutil.copy(REPO_ROOT / "LICENSE.md", dst=DIST_DIR)
+    shutil.copy(REPO_ROOT / "LICENSE.md", dst=DIST_DIR / "gaku")
 
 
 if __name__ == "__main__":
