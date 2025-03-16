@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, AnswerResult, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard } from '../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard, AnswerCheckResponse } from '../types/CardTypes';
 
 const apiUrl = import.meta.env.VITE_APP_API_URL as string || "http://localhost:8000/api";
 
@@ -59,8 +59,8 @@ const getNumDueCards = (request: CardFilter) => axios.post(`${apiUrl}/test/num_d
 const getNumRecentMistakesSince = (filter: CardFilter, time_since: number) => axios.post(`${apiUrl}/test/num_recent_mistakes_since`, { filter, time_since }).then((response) => response.data);
 const startTestRecentMistakes = (start_request: StartTestRequest, time_since: number) => axios.post(`${apiUrl}/test/start_recent_mistakes`, { start_request, time_since }).then((response) => response.data);
 const getNextCard = (): Promise<NextCardMessage> => axios.get(`${apiUrl}/test/next`).then((response) => response.data);
-const checkAnswer = (answer: TestAnswer): Promise<AnswerResult> => axios.post(`${apiUrl}/test/check_answer`, { answer }).then((response) => response.data);
-const submitAnswer = (answer: TestAnswer): Promise<AnswerResult> => axios.post(`${apiUrl}/test/answer_question`, { answer }).then((response) => response.data);
+const checkAnswer = (answer: TestAnswer): Promise<AnswerCheckResponse> => axios.post(`${apiUrl}/test/check_answer`, { answer }).then((response) => response.data);
+const submitAnswer = (answer: TestAnswer): Promise<AnswerCheckResponse> => axios.post(`${apiUrl}/test/answer_question`, { answer }).then((response) => response.data);
 const getTestResults = (): Promise<TestResults> => axios.get(`${apiUrl}/test/results`).then((response) => response.data);
 const getTestStatus = (): Promise<TestStatusMessage> => axios.get(`${apiUrl}/test/status`).then((response) => response.data);
 const wrapUpTest = () => axios.get(`${apiUrl}/test/wrap_up`).then((response) => response.data);

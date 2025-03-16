@@ -143,3 +143,10 @@ class CardSourceLink(BaseModel):
     position: int = -1
     card_id: str
     source_id: str
+
+
+class AnswerCheckResponse(BaseModel):
+    """Result of answer correctness check."""
+
+    all_correct: bool
+    mistakes: dict[str, list[str]]

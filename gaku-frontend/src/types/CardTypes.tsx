@@ -214,6 +214,11 @@ interface TestResults {
     stats: string[]
 }
 
+interface AnswerCheckResponse {
+    all_correct: boolean;
+    mistakes: { [key: string]: string[] }
+}
+
 export type {
     VocabEntry,
     AnswerText,
@@ -238,6 +243,7 @@ export type {
     CardFilter,
     StartTestRequest,
     TestResults,
+    AnswerCheckResponse,
 };
 
 export {

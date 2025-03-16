@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from "../../services/api";
 import IMEInput from '../IMEInput';
-import { NextCardMessage, VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestQuestion, OnomatopoeiaCard, AnswerText, MultiCardEntry } from '../../types/CardTypes';
+import { NextCardMessage, VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestQuestion, OnomatopoeiaCard, AnswerText, MultiCardEntry, AnswerCheckResponse } from '../../types/CardTypes';
 import { getEntryComponent } from '../cards/CardView';
 import { useCommonState } from '../CommonState';
 
@@ -20,6 +20,7 @@ const TestFlashcards = () => {
     const navigate = useNavigate();
     const [testStatus, setTestStatus] = useState({ questions_completed: 0, questions_total: 0, cards_completed: 0, cards_total: 0 });
     const [checkResult, setCheckResult] = useState<boolean | null>(null);
+    const [checkDetails, setCheckDetails] = useState<AnswerCheckResponse | null>(null);
     const [showHint, setShowHint] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
     const [isPractice, setIsPractice] = useState<boolean | null>(null);
@@ -85,6 +86,7 @@ const TestFlashcards = () => {
         setShowCardInfo(false);
         setCheckResult(null);
         setShowAnswer(false);
+        setCheckDetails(null);
         const cardMessage: NextCardMessage = await api.getNextCard();
         if (cardMessage && cardMessage.test_card)
         {
@@ -107,8 +109,9 @@ const TestFlashcards = () => {
 
     const checkAnswerIsCorrect = async () => {
         const result = await api.checkAnswer(answers);
-        setCheckResult(result.answer_is_correct);
-        setShowAnswer(!result.answer_is_correct);
+        setCheckResult(result.all_correct);
+        setCheckDetails(result);
+        setShowAnswer(!result.all_correct);
     };
 
     const handleInputChange = (id: string, value: string) => {
@@ -116,7 +119,7 @@ const TestFlashcards = () => {
     };
 
     const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-        if (e.key === 'Enter')
+        if (e.key === 'Enter' || e.key === 'Tab')
         {
             if (e.ctrlKey)
             {
@@ -191,26 +194,6 @@ const TestFlashcards = () => {
             window.removeEventListener('keydown', handleShortcut);
         };
     }, [toggleHint, showCardInfo]);
-
-    // const handleShortcut = (e: KeyboardEvent) => {
-
-    //     // ctrl-i was not working, shows page info in firefox
-    //     // ctrl-t also not working - new tab
-    //     // ctrl-d not working - bookmark
-    //     // ctrl-m not working - mute tab in firefox
-    //     // f3 not working - find
-    //     if (e.key === 'F4')
-    //     {
-    //         e.preventDefault();
-    //         setShowCardInfo(!showCardInfo);
-    //     }
-    //     // ctrl+h toggle hint - not working - opens history sidebar in firefox
-    //     if (e.key === 'F2')
-    //     {
-    //         e.preventDefault();
-    //         toggleHint();
-    //     }
-    // };
 
     const submitAnswer = async () => {
         // defocus the submit button to prevent accidental double submission
@@ -300,6 +283,19 @@ const TestFlashcards = () => {
         }
     };
 
+    const getQuestionMistakes = (questionId: string) => {
+        if (checkDetails !== null && checkDetails?.mistakes[questionId])
+        {
+            console.log(questionId, checkDetails.mistakes[questionId])
+            if (checkDetails.mistakes[questionId].length == 0)
+            {
+                return null;
+            }
+            return checkDetails.mistakes[questionId].join(", ");
+        }
+        return null;
+    };
+
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', width: "100%" }}>
@@ -344,7 +340,7 @@ const TestFlashcards = () => {
                                                         }
                                                         onKeyDown={(e) => handleKeyDown(e, getAnswerIndex(answer.answer_id))}
                                                     />
-                                                    {/* <br /> */}
+                                                    {(checkDetails && checkDetails.mistakes[answer.answer_id].length > 0) && (<div><span style={{ color: "red" }}><b>×</b></span> {getQuestionMistakes(answer.answer_id)}</div>)}
                                                 </div>
                                             ))}
                                         </div>

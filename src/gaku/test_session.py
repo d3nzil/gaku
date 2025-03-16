@@ -12,7 +12,12 @@ from . import card_types
 from .card_types import TestCardTypes
 from .question import TestAnswer, TestQuestion
 from .database import DbManager
-from .api_types import NextCardMessage, TestStatusMessage, CheckResult
+from .api_types import (
+    NextCardMessage,
+    TestStatusMessage,
+    CheckResult,
+    AnswerCheckResponse,
+)
 from .config import get_config
 
 
@@ -294,7 +299,7 @@ class TestSession(BaseModel):
             next_question=self.current_question, test_card=parent_card
         )
 
-    def check_answer(self, answer_response: TestAnswer) -> bool:
+    def check_answer(self, answer_response: TestAnswer) -> AnswerCheckResponse:
         """Check if the answer is correct.
 
         Parameters
@@ -317,17 +322,25 @@ class TestSession(BaseModel):
             raise ValueError("No current card")
 
         # check if the answer is correct
-        answer_correct = all(
-            [
-                answer.check_answer(answer_response)
-                for group in self.current_question.answers
-                for answer in group.answers
-            ]
-        )
+        check_results = {
+            answer.answer_id: answer.check_answer(answer_response)
+            for group in self.current_question.answers
+            for answer in group.answers
+        }
+
+        all_answers_correct = all([result[0] for result in check_results.values()])
+
         self.check_result = CheckResult(
-            question=self.current_question, correct=answer_correct
+            question=self.current_question, correct=all_answers_correct
         )
-        return answer_correct
+
+        mistakes: dict[str, list[str]] = {
+            key: value[1] for key, value in check_results.items()
+        }
+        response = AnswerCheckResponse(
+            all_correct=all_answers_correct, mistakes=mistakes
+        )
+        return response
 
     def mark_answer_correct(self, question_id: str) -> None:
         """Mark question as correct.
@@ -432,7 +445,7 @@ class TestSession(BaseModel):
         # clear current card
         self.current_question
 
-    def answer_question(self, answer_response: TestAnswer) -> bool:
+    def answer_question(self, answer_response: TestAnswer) -> AnswerCheckResponse:
         """Answer question.
 
         Parameters
@@ -446,18 +459,18 @@ class TestSession(BaseModel):
             True if answer is correct, False otherwise.
         """
         if not self.current_question:
-            return False
+            return AnswerCheckResponse(all_correct=False, mistakes={})
 
         # check if the answer is correct
         answer_correct = self.check_answer(answer_response)
 
-        if answer_correct:
+        if answer_correct.all_correct:
             self.mark_answer_correct(self.current_question.question_id)
-            return True
+            return answer_correct
 
         # mark as mistake
         self.mark_answer_mistake(self.current_question.question_id)
-        return False
+        return answer_correct
 
     def get_test_results(self) -> dict:
         """Get test results of the session.

@@ -27,6 +27,7 @@ from gaku.api_types import (
     ImportRequest,
     StartTestRequest,
     CardFilter,
+    AnswerCheckResponse,
 )
 from gaku.gaku_manager import GakuManager
 from gaku.card_types import (
@@ -460,22 +461,23 @@ class AnswerMessage(BaseModel):
 
 
 @api_router.post("/test/check_answer")
-async def check_answer(answer_message: AnswerMessage) -> dict:
+async def check_answer(answer_message: AnswerMessage) -> AnswerCheckResponse:
     """Check answer without answering it."""
     if manager.test_session is None:
         raise HTTPException(status_code=400, detail="Test session not started")
-    answer_is_correct = manager.test_session.check_answer(answer_message.answer)
-    logging.info(f"Answer is correct: {answer_is_correct}")
-    return {"status": "ok", "answer_is_correct": answer_is_correct}
+    check_result = manager.test_session.check_answer(answer_message.answer)
+    logging.info(f"Answer check result: {check_result}")
+    return check_result
 
 
 @api_router.post("/test/answer_question")
-async def answer_question(answer_message: AnswerMessage) -> dict:
+async def answer_question(answer_message: AnswerMessage) -> AnswerCheckResponse:
     """Answer question."""
     if manager.test_session is None:
         raise HTTPException(status_code=400, detail="Test session not started")
-    answer_is_correct = manager.test_session.answer_question(answer_message.answer)
-    return {"status": "ok", "answer_is_correct": answer_is_correct}
+    check_result = manager.test_session.answer_question(answer_message.answer)
+    logging.info(f"Answer check result: {check_result}")
+    return check_result
 
 
 @api_router.post("/test/mark_correct")
