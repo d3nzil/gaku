@@ -9,6 +9,7 @@ import zipfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
+DIST_DIR = REPO_ROOT / "dist"
 
 
 def build_frontend() -> None:
@@ -58,13 +59,12 @@ def copy_vocab() -> None:
 
 def package_build() -> None:
     """Creates platform appropriate package."""
-    DIST_DIR = REPO_ROOT / "dist"
 
     version = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     base_name = "gaku"
     if sys.platform == "win32":
-        pkg_name = f"{base_name}.zip"
+        pkg_name = f"{base_name}_windows.zip"
 
         command: list[str] = [
             "python",
@@ -76,7 +76,7 @@ def package_build() -> None:
         ]
 
     elif sys.platform == "linux":
-        pkg_name = f"{base_name}.tgz"
+        pkg_name = f"{base_name}_linux.tgz"
         command: list[str] = [
             "tar",
             "-czf",
@@ -96,6 +96,11 @@ def package_build() -> None:
     pkg.rename(DIST_DIR / f"{base_name}_{version}{pkg.suffix}")
 
 
+def copy_license() -> None:
+    """Copies license file to the build directory."""
+    shutil.copy(REPO_ROOT / "LICENSE.md", dst=DIST_DIR)
+
+
 if __name__ == "__main__":
     # pre-build steps
     build_frontend()
@@ -104,4 +109,5 @@ if __name__ == "__main__":
     build_pyinstaller()
     # post build steps
     copy_vocab()
+    copy_license()
     package_build()
