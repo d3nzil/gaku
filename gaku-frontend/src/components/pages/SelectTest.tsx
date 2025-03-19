@@ -248,7 +248,7 @@ const SelectTest = () => {
                         <h3 style={{ margin: "0 0", padding: "0.5em 0" }} >Current test session</h3>
                         <div style={{ display: 'flex', flexDirection: "row", gap: "0.5em" }}>
                             <div style={{ flex: 1 }}>
-                                {testSessionStatus?.cards_completed} / {testSessionStatus?.cards_total} cards completed
+                                {testSessionStatus?.cards_completed}/{testSessionStatus?.cards_total} cards completed ({testSessionStatus?.questions_completed}/{testSessionStatus?.questions_total} questions)
                             </div>
                             <div style={{ flex: 1 }}>
                                 <button onClick={continueTest}>Continue Test</button>
