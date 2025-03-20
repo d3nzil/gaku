@@ -368,7 +368,7 @@ class TestBasics(TestSetup):
         # - correct, missing required answers - none or subset
         # - wrong answer id + correct answers - TODO: clarify behavior
         answer_response = test.answer_question({})
-        assert answer_response is False
+        assert answer_response.all_correct is False
 
         for num_responses in range(3):
             logging.info(f"Answering question {num_responses+1}")
@@ -424,7 +424,7 @@ class TestBasics(TestSetup):
             question = test.get_test_question()
             # empty response should be treated as incorrect
             answer_response = test.answer_question({})
-            assert answer_response is False
+            assert answer_response.all_correct is False
 
         for num_responses in range(3):
             logging.info(f"Answering question {num_responses+1}")

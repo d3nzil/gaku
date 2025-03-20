@@ -29,8 +29,7 @@ class TestVocabDictionary:
         meanings = [
             meaning
             for vocab_meaning in entry[0].meanings
-            for meaning_set in vocab_meaning
-            for meaning in meaning_set
+            for meaning in vocab_meaning.meanings
         ]
         logging.info(f"Extracted meanings: {meanings}")
 

@@ -86,7 +86,7 @@ class TestBasics(TestSetup):
                         )
 
             answer_response = test.answer_question(get_answer_for_question(question))
-            assert answer_response is True
+            assert answer_response.all_correct is True
             question = test.get_test_question()
 
     def test_no_required_answers(self) -> None:

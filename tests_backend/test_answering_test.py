@@ -44,7 +44,7 @@ class TestAnswering(TestSetup):
         question = test.get_test_question()
         answers = get_answer_for_question(question)
         result = test.answer_question(answers)
-        assert result is True
+        assert result.all_correct is True
 
         manager.start_test_session_new_cards(test_setup)
 
@@ -66,4 +66,4 @@ class TestAnswering(TestSetup):
         logging.info(f"Answers without ... are: {answers}")
 
         result = test.answer_question(answers)
-        assert result is True
+        assert result.all_correct is True
