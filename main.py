@@ -61,7 +61,9 @@ resource_dir = app_dir / "resources"
 frontend_path = resource_dir / "www"
 
 
-manager = GakuManager(workdir=app_dir, userdata=userdata_dir)
+manager = GakuManager(
+    resource_dir=resource_dir, userdata_dir=userdata_dir, gaku_root_dir=app_dir
+)
 
 
 @asynccontextmanager

@@ -5,8 +5,9 @@ import pathlib
 
 from gaku import gaku_manager
 
-RESOURCES = pathlib.Path(__file__).parent.parent / "resources"
-WORKDIR = pathlib.Path(__file__).parent.parent / "userdata"
+REPO_ROOT = pathlib.Path(__file__).parent.parent
+RESOURCES = REPO_ROOT / "resources"
+USERDATA = REPO_ROOT / "userdata"
 
 parser = argparse.ArgumentParser(description="Tool to check vocabulary list file")
 parser.add_argument(
@@ -18,7 +19,9 @@ parser.add_argument(
 def check_vocab(vocab_path: str) -> None:
     """Runs the vocab list checks."""
 
-    manager = gaku_manager.GakuManager(resource_dir=RESOURCES, workdir=WORKDIR)
+    manager = gaku_manager.GakuManager(
+        gaku_root_dir=REPO_ROOT, resource_dir=RESOURCES, userdata_dir=USERDATA
+    )
 
     vocab_list = pathlib.Path(vocab_path)
     if not vocab_list.exists():

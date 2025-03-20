@@ -12,5 +12,5 @@ set -o pipefail
 . ./venv/bin/activate
 
 mypy ./src 
-mypy ./tests_backend main.py
-ruff check ./src ./tests_backend main.py
+mypy ./tests_backend ./tools main.py
+ruff check ./src ./tests_backend ./tools main.py

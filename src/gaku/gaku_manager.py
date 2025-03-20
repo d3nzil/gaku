@@ -51,10 +51,26 @@ from .api_types import (
 class GakuManager:
     """Manages all the Gaku functionality."""
 
-    def __init__(self, workdir: Path, userdata: Path) -> None:
-        self.userdata = userdata
-        self.userdata.mkdir(exist_ok=True)
-        self.resource_dir = workdir / "resources"
+    def __init__(
+        self,
+        resource_dir: Path,
+        userdata_dir: Path,
+        gaku_root_dir: Path,
+    ) -> None:
+        """Initializes Gaku manager.
+
+        Parameters
+        ----------
+        gaku_root_dir: Path
+            Path to the root of Gaku directory, must contain the alembic directory and ini file
+        resource___dir: Path
+            Path to resource directory, where the dictionaries and frontend are present
+        userdata_dir: Path
+            Path to where the user data are stored
+        """
+        self.userdata_dir = userdata_dir
+        self.userdata_dir.mkdir(exist_ok=True)
+        self.resource_dir = resource_dir
         if not self.resource_dir.exists():
             # TODO: validate all expected files on startup
             logging.error(
@@ -63,7 +79,9 @@ class GakuManager:
             logging.error("Exiting")
             exit(-1)
 
-        self.db_file: Path = self.userdata / "cards.db"
+        self.root_dir = gaku_root_dir
+
+        self.db_file: Path = self.userdata_dir / "cards.db"
         self.db_connection: str = f"sqlite:///{str(self.db_file.resolve())}"
         logging.info(f"Userdata db connection: {self.db_connection}")
         self.db: DbManager = DbManager(self.db_connection)
@@ -71,8 +89,8 @@ class GakuManager:
             f"Userdata {str(self.db_file.resolve())} exists: {self.db_file.exists()}"
         )
 
-        alembic_cfg = Config(workdir / "alembic.ini")
-        alembic_dir = workdir / "alembic"
+        alembic_cfg = Config(self.root_dir / "alembic.ini")
+        alembic_dir = self.root_dir / "alembic"
         alembic_cfg.set_main_option("script_location", str(alembic_dir.resolve()))
         alembic_cfg.set_main_option("sqlalchemy.url", self.db_connection)
         if not self.db_file.exists():
@@ -88,7 +106,7 @@ class GakuManager:
         self.db_dictionary_file = self.resource_dir / "dictionary.db"
         dictionary_exists = self.db_dictionary_file.exists()
         if not dictionary_exists:
-            old_dict = self.userdata / "dictionary.db"
+            old_dict = self.userdata_dir / "dictionary.db"
             if old_dict.exists():
                 logging.info("Found dictionary in old location, moving to resources")
                 shutil.move(old_dict, self.db_dictionary_file)
@@ -912,11 +930,11 @@ class GakuManager:
             logging.info("No test session to save")
             return
 
-        session_file = self.userdata / "test_session.json"
+        session_file = self.userdata_dir / "test_session.json"
 
         if session_file.exists():
             session_file.rename(
-                self.userdata
+                self.userdata_dir
                 / f"test_session_backup_{datetime.datetime.now().isoformat()}.json"
             )
             logging.warning("Old test session file found, renamed to backup")
@@ -926,14 +944,14 @@ class GakuManager:
 
         # keep at most 5 backups
         backup_files = sorted(
-            self.userdata.glob("test_session_backup_*.json"), reverse=True
+            self.userdata_dir.glob("test_session_backup_*.json"), reverse=True
         )
         for backup_file in backup_files[5:]:
             backup_file.unlink()
 
     def load_test_session(self) -> None:
         """Loads test session from saved file."""
-        session_file = self.userdata / "test_session.json"
+        session_file = self.userdata_dir / "test_session.json"
 
         if not session_file.exists():
             # if there is no session file do nothing
@@ -947,7 +965,7 @@ class GakuManager:
 
     def clear_saved_test_session(self) -> None:
         """Deletes test session file."""
-        session_file = self.userdata / "test_session.json"
+        session_file = self.userdata_dir / "test_session.json"
 
         if session_file.exists():
             session_file.unlink()

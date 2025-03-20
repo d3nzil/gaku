@@ -33,7 +33,11 @@ class TestSetup:
             self._setup_dictionary()
         copy(self.dictionary_file, self.tempdir / "dictionary.db")
 
-        self.manager = gaku.GakuManager(workdir=self.tempdir, resource_dir=RESOURCE_DIR)
+        self.manager = gaku.GakuManager(
+            userdata_dir=self.tempdir,
+            resource_dir=RESOURCE_DIR,
+            gaku_root_dir=REPO_ROOT,
+        )
 
         yield
         # no teardown needed for now
