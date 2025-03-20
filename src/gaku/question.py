@@ -182,59 +182,45 @@ class Answer(BaseModel):
             logging.debug(f"Accepted answers - suffix: {expected_answers}")
             logging.debug(f"Required answers - suffix: {required_answers}")
 
-            # verify all required answers are present
-            if required_answers - received_answers:
-                logging.info("Not all required answers present")
-                logging.info(f"Required: {required_answers}")
-                logging.info(f"Provided: {received_answers}")
-                return False, list(received_answers - expected_answers)
+        else:
+            logging.debug("Processing Hiragana or Katakana answer")
+            # if the type is HIRAGANA or KATAKANA we need to split the answer to set
 
-            # check if all the answers are in the set of correct answers
-            # since we are using set, the order of answers does not matter
-            # and we can just check if the set of received answers is a subset of the set of correct answers
-            answer_is_correct = received_answers.issubset(expected_answers)
-            if not answer_is_correct:
-                logging.info(
-                    f"Answer is not correct, accepted answers are: {expected_answers}"
-                )
+            # first replace japanese commas with english commas
+            # using casefold just to be consistent with the ROMAJI type
+            # but should not be necessary here as we are comparing kana
+            expected_answers = set()
+            for answer in self.answers:
+                answer_text = self.prepare_answer(answer.answer_text)
+                expected_answers.update([answer_text.casefold()])
 
-            # validate there were no dulicate answers
-            if len(received_answers) != len(user_answer.split(",")):
-                logging.info("Duplicate answers")
-                return False, list(received_answers - expected_answers)
+            required_answers = set(self.get_required_answers())
 
-            return answer_is_correct, list(received_answers - expected_answers)
+        # validate there were no duplicate answers
+        if len(received_answers) != len(user_answer.split(",")):
+            logging.info("Duplicate answers")
+            return False, list(received_answers - expected_answers)
 
-        logging.debug("Processing Hiragana or Katakana answer")
-        # if the type is HIRAGANA or KATAKANA we need to split the answer to set
-
-        # first replace japanese commas with english commas
-        # using casefold just to be consistent with the ROMAJI type
-        # but should not be necessary here as we are comparing kana
-        expected_answers = set()
-        for answer in self.answers:
-            answer_text = self.prepare_answer(answer.answer_text)
-            expected_answers.update([answer_text.casefold()])
-
-        required_answers = set(self.get_required_answers())
         # verify all required answers are present
         if received_answers - received_answers:
             logging.info("Not all required answers present")
             logging.info(f"Required: {required_answers}")
             logging.info(f"Provided: {received_answers}")
-            return False, list(received_answers - expected_answers)
-
-        # validate there were no dulicate answers
-        if len(received_answers) != len(user_answer.split(",")):
-            logging.info("Duplicate answers")
-            return False, list(received_answers - expected_answers)
+            return False, list(received_answers - expected_answers - set(""))
 
         logging.info(f"Received answers: {received_answers}")
         logging.info(f"Correct answers: {expected_answers}")
 
-        return received_answers.issubset(expected_answers), list(
-            received_answers - expected_answers
-        )
+        # check if all the answers are in the set of correct answers
+        # since we are using set, the order of answers does not matter
+        # and we can just check if the set of received answers is a subset of the set of correct answers
+        answer_is_correct = received_answers.issubset(expected_answers)
+        if not answer_is_correct:
+            logging.info(
+                f"Answer is not correct, accepted answers are: {expected_answers}"
+            )
+
+        return answer_is_correct, list(received_answers - expected_answers - set(""))
 
 
 class AnswerGroup(BaseModel):
