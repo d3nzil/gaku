@@ -418,26 +418,27 @@ class GakuManager:
                     if dictionary_entry.ent_seq not in [
                         entry.dictionary_id for entry in vocab_entries
                     ]:
-                        vocab_entries.append(
-                            VocabCard(
-                                dictionary_id=dictionary_entry.ent_seq,
-                                writing=vocab_query,
-                                readings=[],  # reading is same as writing, so we don't need it
-                                # TODO: review - why test_enabled?
-                                meanings=[
-                                    VocabularyMeaningEntry(
-                                        part_of_speech=meaning.part_of_speech,
-                                        meanings=[
-                                            AnswerText(answer_text=meaning)
-                                            for meaning in meaning.meanings
-                                        ],
-                                        test_enabled=True,
-                                    )
-                                    for meaning in dictionary_entry.meanings
-                                ],
-                                note=f"Import note: Found in dictionary by reading, kanji: {dictionary_entry.kanji_elements}",
-                            )
+
+                        new_card = VocabCard(
+                            dictionary_id=dictionary_entry.ent_seq,
+                            writing=vocab_query,
+                            readings=[],  # reading is same as writing, so we don't need it
+                            # TODO: review - why test_enabled?
+                            meanings=[
+                                VocabularyMeaningEntry(
+                                    part_of_speech=meaning.part_of_speech,
+                                    meanings=[
+                                        AnswerText(answer_text=meaning)
+                                        for meaning in meaning.meanings
+                                    ],
+                                    test_enabled=True,
+                                )
+                                for meaning in dictionary_entry.meanings
+                            ],
+                            note=f"Import note: Found in dictionary by reading, kanji: {dictionary_entry.kanji_elements}",
                         )
+                        vocab_entries.append(new_card)
+                        new_cards.append(new_card.card_id)
 
             if not vocab_entries:
                 logging.warning(f"Word {vocab_query} not found in dictionary")
@@ -449,6 +450,7 @@ class GakuManager:
                         note="Warning: Word not found in dictionary",
                     )
                 ]
+                new_cards.append(vocab_entries[0].card_id)
 
         logging.info(f"Found {len(vocab_entries)} entries for {vocab_query}")
         logging.debug(vocab_entries)
