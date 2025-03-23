@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import api from "../../services/api";
-import { CardSource } from '../../types/CardTypes';
+import { CardSource, CardSourcesProps } from '../../types/CardTypes';
 
-const SourcesEditor = () => {
+const SourcesEditor = (
+    { sources, onSourcesUpdate }: CardSourcesProps,
+) => {
+    // const [sources, setSources] = useState<CardSource[]>([]);
+
     // sources have: source_id(str), source_name(str), source_section(str)
-    // since this is a source editor, we need to keep track of all sources
-    // saving is handled by the backend automatically, no need to handle it here
-    const [sources, setSources] = useState<CardSource[]>([]);
     const [sourceInput, setSourceInput] = useState<CardSource>({
         source_id: '',
         source_name: '',
@@ -16,7 +17,7 @@ const SourcesEditor = () => {
     useEffect(() => {
         const fetchSources = async () => {
             const sources = await api.getSources();
-            setSources(sources);
+            onSourcesUpdate(sources);
         };
         document.title = "Gaku - Card Sources";
         fetchSources();
@@ -27,7 +28,7 @@ const SourcesEditor = () => {
         if (response.status === "ok")
         {
             const updatedSources = await api.getSources();
-            setSources(updatedSources);
+            onSourcesUpdate(updatedSources);
         }
         // Reset the form after adding the source
         setSourceInput({
@@ -42,7 +43,7 @@ const SourcesEditor = () => {
         if (response.status === "ok")
         {
             const updatedSources = await api.getSources();
-            setSources(updatedSources);
+            onSourcesUpdate(updatedSources);
         }
     };
 
@@ -51,7 +52,7 @@ const SourcesEditor = () => {
         if (response.status === "ok")
         {
             const updatedSources = await api.getSources();
-            setSources(updatedSources);
+            onSourcesUpdate(updatedSources);
         }
     };
 
