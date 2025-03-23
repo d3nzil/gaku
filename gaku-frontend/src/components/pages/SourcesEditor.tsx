@@ -57,18 +57,24 @@ const SourcesEditor = (
     };
 
     return (
-        <div>
-            <div>
+        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <div style={{ maxWidth: "40em" }}>
                 <h2>Sources</h2>
-                <ul>
-                    {sources.map((source) => (
-                        <li key={source.source_id}>
-                            {source.source_name} - {source.source_section}
-                            <button onClick={() => deleteSource(source)}>Delete</button>
-                            <button onClick={() => editSource(source)}>Edit</button>
-                        </li>
-                    ))}
-                </ul>
+                <table>
+                    <tbody>
+                        {sources.map((source) => (
+                            <tr key={source.source_id}>
+                                <td style={{ textAlign: "left", paddingRight: "1em" }}>
+                                    {source.source_name} - {source.source_section}
+                                </td>
+                                <td>
+                                    <button onClick={() => deleteSource(source)}>Delete</button>
+                                    <button onClick={() => editSource(source)}>Edit</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
                 <h3>Add Source</h3>
                 <input
                     type="text"
