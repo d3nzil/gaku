@@ -116,7 +116,7 @@ const MultiCardEditor = () => {
         {
             if (currentMultiCard.card_id)
             {
-                await api.updateCard(currentMultiCard);
+                await api.updateCard({ card: currentMultiCard });
             } else
             {
                 const response = await api.addCard(currentMultiCard);

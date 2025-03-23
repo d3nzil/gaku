@@ -259,7 +259,7 @@ const TestFlashcards = () => {
     };
 
     const editCard = async (updatedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
-        const response = await api.updateCard(updatedCard);
+        const response = await api.updateCard({ card: updatedCard });
         if (response.status === "ok")
         {
             setCardSaved(true);
