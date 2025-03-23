@@ -225,6 +225,12 @@ interface UpdateCardRequest {
 }
 
 
+interface CardSourcesProps {
+    sources: CardSource[];
+    onSourcesUpdate: (updatedSources: CardSource[]) => void
+}
+
+
 export type {
     VocabEntry,
     AnswerText,
@@ -251,6 +257,7 @@ export type {
     TestResults,
     AnswerCheckResponse,
     UpdateCardRequest,
+    CardSourcesProps,
 };
 
 export {

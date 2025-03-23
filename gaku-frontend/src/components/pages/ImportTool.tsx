@@ -3,12 +3,14 @@ import api from "../../services/api";
 import Select from 'react-select';
 import getEntryComponent from '../cards/CardView';
 
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, OnomatopoeiaCard, CardSource, GeneratedImports, ImportItem, MultiCardEntry } from '../../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, OnomatopoeiaCard, CardSource, GeneratedImports, ImportItem, MultiCardEntry, CardSourcesProps } from '../../types/CardTypes';
 
 
-const ImportTool = () => {
+const ImportTool = (
+    { sources }: CardSourcesProps,
+) => {
     const [importText, setImportText] = useState('');
-    const [allSources, setAllSources] = useState<CardSource[]>([]);
+    // const [allSources, setAllSources] = useState<CardSource[]>([]);
     const [selectedSources, setSelectedSources] = useState<CardSource[]>([]);
     const [generatedImports, setGeneratedImports] = useState<GeneratedImports | null>(null);
     const [importResult, setImportResult] = useState<string | null>(null);
@@ -17,7 +19,7 @@ const ImportTool = () => {
     // initialize the import tool
     useEffect(() => {
         document.title = "Gaku - Import Tool";
-        api.getSources().then(setAllSources);
+
     }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +36,12 @@ const ImportTool = () => {
             reader.readAsText(file);
         }
     }
+
+
+    useEffect(() => {
+        // clear selected sources on sources change
+        setSelectedSources([]);
+    }, [sources]);
 
     const generateImports = () => {
         // clear previous imports
@@ -137,7 +145,7 @@ const ImportTool = () => {
     }
 
     const getSourceLabel = (source_id: string) => {
-        const source = allSources.find((source) => source.source_id === source_id);
+        const source = sources.find((source) => source.source_id === source_id);
         // label should be source_name + source_section, separated by a dash
         return source ? `${source.source_name} - ${source.source_section}` : source_id;
     }
@@ -195,9 +203,10 @@ const ImportTool = () => {
                     <h2>Generated imports</h2>
                     <h3>Selected sources</h3>
                     <Select
-                        options={allSources.map((source) => ({ value: source.source_id, label: getSourceLabel(source.source_id) }))}
                         isMulti
-                        onChange={(selectedOptions) => setSelectedSources(selectedOptions.map((option) => allSources.find((source) => source.source_id === option.value)!))}
+                        options={sources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                        value={selectedSources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                        onChange={(selected) => setSelectedSources(selected.map((source) => source.value))}
                         className='react-select'
                     />
                     <br />

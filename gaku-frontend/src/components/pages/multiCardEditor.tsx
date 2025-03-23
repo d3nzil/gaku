@@ -3,7 +3,7 @@ import { SingleValue } from 'react-select';
 import api from "../../services/api";
 import Select from 'react-select';
 import getEntryComponent from '../cards/CardView';
-import { VocabEntry, KanjiEntry, RadicalEntry, CardType } from '../../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, CardType, CardSourcesProps } from '../../types/CardTypes';
 import MultiCardEntryComponent from '../cards/MultiCard';
 type MultiCardEntry = import('../../types/CardTypes').MultiCardEntry;
 type CardFilter = import('../../types/CardTypes').CardFilter;
@@ -11,32 +11,27 @@ import IMEInput from '../IMEInput';
 import { CardSource } from '../../types/CardTypes';
 
 
-const MultiCardEditor = () => {
+const MultiCardEditor = ({ sources }: CardSourcesProps) => {
     const [currentMultiCard, setCurrentMultiCard] = useState<MultiCardEntry | null>(null);
     const [multiCardType, setMultiCardType] = useState<'VOCABULARY' | 'KANJI' | 'RADICAL'>('KANJI');
     const [cardSearchText, setCardSearchText] = useState<string>('');
     const [cardSearchResults, setCardSearchResults] = useState<(VocabEntry | KanjiEntry | RadicalEntry)[]>([]);
     const [multiCardSearchResults, setMultiCardSearchResults] = useState<MultiCardEntry[]>([]);
 
-    const [availableSources, setAvailableSources] = useState<CardSource[]>([]);
     const [selectedSources, setSelectedSources] = useState<CardSource[]>([]);
 
-    // initialize the multi card editor
+    // // initialize the multi card editor
+    // useEffect(() => {
+    //     document.title = "Gaku - Multi Card Editor";
+    // }, []);
+
     useEffect(() => {
-        document.title = "Gaku - Multi Card Editor";
-    }, []);
-
-
-    // get the available sources
-    useEffect(() => {
-        api.getSources().then((sources) => {
-            setAvailableSources(sources);
-        });
-    }, []);
-
+        // clear selected sources on sources change
+        setSelectedSources([]);
+    }, [sources]);
 
     const getSourceLabel = (source_id: string) => {
-        const source = availableSources.find((source) => source.source_id === source_id);
+        const source = sources.find((source) => source.source_id === source_id);
         // label should be source_name + source_section, separated by a dash
         return source ? `${source.source_name} - ${source.source_section}` : source_id;
     }
@@ -165,7 +160,7 @@ const MultiCardEditor = () => {
                                     <b>Select sources</b>
                                     <Select
                                         isMulti
-                                        options={availableSources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                                        options={sources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
                                         value={selectedSources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
                                         onChange={(selected) => setSelectedSources(selected.map((source) => source.value))}
                                         className='react-select'

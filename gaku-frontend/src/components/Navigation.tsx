@@ -35,14 +35,6 @@ const Navigation = () => {
                     <b> | </b>
                     <Link to="/cardmanager">Card Manager</Link>
                     <b> | </b>
-                    <Link to="/cards">Cards</Link>
-                    <b> | </b>
-                    <Link to="/multi">Multi Cards</Link>
-                    <b> | </b>
-                    <Link to="/source">Sources</Link>
-                    <b> | </b>
-                    <Link to="/import">Import</Link>
-                    <b> | </b>
                     <Link to="/">Select Test</Link>
                     {context.testSessionActive && (<>
                         <b> | </b>

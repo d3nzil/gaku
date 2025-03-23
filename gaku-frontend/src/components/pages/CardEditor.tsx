@@ -3,7 +3,7 @@ import Select from 'react-select';
 import api from "../../services/api";
 // import Select from 'react-select';
 import getEntryComponent from '../cards/CardView';
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, MultiCardEntry, OnomatopoeiaCard, CardSource, CardType } from '../../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, MultiCardEntry, OnomatopoeiaCard, CardSource, CardType, CardSourcesProps } from '../../types/CardTypes';
 import { AnswerType } from '../../types/CardTypes';
 
 
@@ -17,10 +17,9 @@ function isEditableType(card: VocabEntry | KanjiEntry | RadicalEntry | QuestionE
 
 
 
-const CardEditor = () => {
+const CardEditor = ({ sources }: CardSourcesProps,) => {
     const [cardInput, setCardInput] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard | null>(null);
     const [cards, setCards] = useState<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]>([]);
-    const [availableSources, setAvailableSources] = useState<CardSource[]>([]);
     const [selectedSources, setSelectedSources] = useState<CardSource[]>([]);
     const [cardType, setCardType] = useState<CardType>(CardType.VOCABULARY);
     // const answerInputRef = useRef(null);
@@ -43,6 +42,12 @@ const CardEditor = () => {
     useEffect(() => {
         cardInputRef.current = cardInput;
     }, [cardInput]);
+
+
+    useEffect(() => {
+        // clear selected sources on sources change
+        setSelectedSources([]);
+    }, [sources]);
 
     const addCard = async (cardData: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
         const response = await api.addCard(cardData);
@@ -91,8 +96,6 @@ const CardEditor = () => {
         api.getNumDueCards(filter).then((num) => {
             numDueCards.current = num;
         });
-        // Fetch all sources
-        api.getSources().then(setAvailableSources);
     }, []); // Empty dependency array to run only once on mount
 
     useEffect(() => {
@@ -127,7 +130,7 @@ const CardEditor = () => {
     }
 
     const getSourceLabel = (source_id: string) => {
-        const source = availableSources.find((source) => source.source_id === source_id);
+        const source = sources.find((source) => source.source_id === source_id);
         // label should be source_name + source_section, separated by a dash
         return source ? `${source.source_name} - ${source.source_section}` : source_id;
     }
@@ -144,7 +147,7 @@ const CardEditor = () => {
                             <b>Select sources</b>
                             <Select
                                 isMulti
-                                options={availableSources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                                options={sources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
                                 value={selectedSources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
                                 onChange={(selected) => setSelectedSources(selected.map((source) => source.value))}
                                 className='react-select'
