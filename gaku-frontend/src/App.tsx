@@ -7,12 +7,14 @@ import SourcesEditor from "./components/pages/SourcesEditor"; // Adjust the path
 import ImportTool from "./components/pages/ImportTool";
 import SelectTest from "./components/pages/SelectTest"; // Adjust the path based on where you saved SelectTest.js
 import MultiCardEditor from "./components/pages/multiCardEditor";
+import CardManager from './components/pages/CardManager';
 
 function App() {
   return (
     <Router>
       <Navigation />
       <Routes>
+        <Route path='/cardmanager' element={<CardManager />} />
         <Route path="/cards" element={<CardEditor />} /> {/* Default route */}
         <Route path="/source" element={<SourcesEditor />} />
         {/* <Route path="/edit" element={<EditFlashcards />} /> */}
