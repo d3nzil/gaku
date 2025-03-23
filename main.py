@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from gaku import api_types
 from gaku.api_types import (
     NextCardMessage,
     TestStatusMessage,
@@ -149,7 +150,7 @@ async def add_card(card: dict) -> dict:
 
 
 @api_router.post("/cards/update")
-async def edit_card(card: dict) -> dict:
+async def edit_card(update: api_types.CardUpdateRequest) -> dict:
     """Edit card.
 
     Parameters
@@ -162,8 +163,11 @@ async def edit_card(card: dict) -> dict:
     dict
         Dictionary with status field.
     """
+    card = update.card
     updated_card = create_card_from_json(card)
     manager.db.update_card(updated_card)
+    if update.reset_fsrs:
+        manager.db.delete_card_fsrs(updated_card.card_id)
     logging.info(f"Updated card: {updated_card}")
     return {"status": "ok"}
 

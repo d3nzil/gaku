@@ -150,3 +150,10 @@ class AnswerCheckResponse(BaseModel):
 
     all_correct: bool
     mistakes: dict[str, list[str]]
+
+
+class CardUpdateRequest(BaseModel):
+    """Request to change stored card."""
+
+    card: dict
+    reset_fsrs: bool = False
