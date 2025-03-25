@@ -28,6 +28,8 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
     const numDueCards = useRef(0);
     const [selectedCardTypes, setSelectedCardTypes] = useState<CardType[]>([]);
 
+    const [selectedSourcesListing, setSelectedSourcesListing] = useState<CardSource[]>([]);
+    const [selectedCardTypesListing, setSelectedCardTypesListing] = useState<CardType[]>([]);
 
     const createFilter = () => {
         return {
@@ -38,6 +40,17 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
             num_cards: null,
         };
     }
+
+    const createFilterListing = () => {
+        return {
+            card_sources: selectedSourcesListing,
+            card_types: selectedCardTypesListing,
+            search_text: '',
+            start_index: null,
+            num_cards: null,
+        };
+    }
+
 
     useEffect(() => {
         cardInputRef.current = cardInput;
@@ -53,7 +66,8 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
         const response = await api.addCard(cardData);
         if (response.status === "ok")
         {
-            const updatedCards = await api.getCards();
+            const filter = createFilterListing()
+            const updatedCards = await api.getCards(filter);
             setCards(updatedCards);
         }
         return response;
@@ -63,7 +77,8 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
         const response = await api.updateCard({ card: updatedCard });
         if (response.status === "ok")
         {
-            const updatedCards = await api.getCards();
+            const filter = createFilterListing();
+            const updatedCards = await api.getCards(filter);
             setCards(updatedCards);
         }
     };
@@ -90,9 +105,9 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
     useEffect(() => {
         document.title = "Gaku - Card Editor";
         // Fetch all cards from the API when the component loads
-        api.getCards().then(setCards);
+        const filter = createFilterListing();
+        api.getCards(filter).then(setCards);
         // Fetch the number of due cards
-        const filter = createFilter();
         api.getNumDueCards(filter).then((num) => {
             numDueCards.current = num;
         });
@@ -113,11 +128,18 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
         };
     }, []); // Empty dependency array
 
+    useEffect(() => {
+        const filter = createFilterListing();
+        api.getCards(filter).then(setCards);
+    }, [selectedCardTypesListing, selectedSourcesListing]);
+
+
     const deleteCard = async (removedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard) => {
         const response = await api.deleteCard(removedCard);
         if (response.status === "ok")
         {
-            const updatedCards = await api.getCards();
+            const filter = createFilterListing();
+            const updatedCards = await api.getCards(filter);
             setCards(updatedCards);
         }
     };
@@ -191,6 +213,28 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
 
                     <div style={{ flex: 1, maxHeight: '90vh', minWidth: "20em", overflowY: 'auto', border: "1px solid grey", padding: "0.5em", borderRadius: "0.5em", marginBottom: "0.5em" }}>
                         <h3 style={{ margin: "0 0", padding: "0.5em 0" }}>All Cards</h3>
+                        <b>Select sources</b>
+                        <Select
+                            isMulti
+                            options={sources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                            value={selectedSourcesListing.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                            onChange={(selected) => setSelectedSourcesListing(selected.map((source) => source.value))}
+                            className='react-select'
+                        />
+                        <b>Select card types</b>
+                        <Select<CardTypeOption, true>
+                            isMulti
+                            options={[
+                                { value: CardType.KANJI, label: 'Kanji' },
+                                { value: CardType.VOCABULARY, label: 'Vocabulary' },
+                                { value: CardType.RADICAL, label: 'Radical' },
+                                { value: CardType.MULTI_CARD, label: 'Multi Card' },
+                                { value: CardType.QUESTION, label: 'Custom Question' },
+                            ]}
+                            value={selectedCardTypesListing.map((type) => ({ value: type, label: type }))}
+                            onChange={(selected) => setSelectedCardTypesListing(selected.map((type) => type.value))}
+                            className='react-select'
+                        />
                         {/* <br /> */}
                         <ul style={{ listStyleType: "none", padding: 0 }}>
                             {cards.map((card) => (

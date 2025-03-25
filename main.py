@@ -113,12 +113,12 @@ class CardSourceLinkRequest(BaseModel):
 # - edit card
 # - delete card
 # - save cards to file
-@api_router.get("/cards")
-async def get_cards() -> list[TestCardTypes]:
+@api_router.post("/cards")
+async def get_cards(filter: CardFilter) -> list[TestCardTypes]:
     """Get all cards.
     Most recent cards are returned first.
     """
-    send_cards = manager.db.get_cards_any_state()
+    send_cards = manager.db.get_cards_any_state(filter)
     send_cards.reverse()
     logging.info(f"Sending {len(send_cards)} cards")
     return send_cards

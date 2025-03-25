@@ -4,8 +4,8 @@ import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSo
 const apiUrl = import.meta.env.VITE_APP_API_URL as string || "http://localhost:8000/api";
 
 // card editor API methods
-const getCards = (): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
-    axios.get(`${apiUrl}/cards`).then((response) => response.data);
+const getCards = (filter: CardFilter): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
+    axios.post(`${apiUrl}/cards`, filter).then((response) => response.data);
 
 const addCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): Promise<any> =>
     axios.post(`${apiUrl}/cards/add`, card).then((response) => response.data);
