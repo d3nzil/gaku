@@ -20,26 +20,20 @@ function isEditableType(card: VocabEntry | KanjiEntry | RadicalEntry | QuestionE
 const CardEditor = ({ sources }: CardSourcesProps,) => {
     const [cardInput, setCardInput] = useState<VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard | null>(null);
     const [cards, setCards] = useState<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]>([]);
-    const [selectedSources, setSelectedSources] = useState<CardSource[]>([]);
     const [cardType, setCardType] = useState<CardType>(CardType.VOCABULARY);
     // const answerInputRef = useRef(null);
     // const questionInputRef = useRef(null);
     const cardInputRef = useRef(cardInput);
     const numDueCards = useRef(0);
-    const [selectedCardTypes, setSelectedCardTypes] = useState<CardType[]>([]);
 
+
+    // listing filter
     const [selectedSourcesListing, setSelectedSourcesListing] = useState<CardSource[]>([]);
     const [selectedCardTypesListing, setSelectedCardTypesListing] = useState<CardType[]>([]);
 
-    const createFilter = () => {
-        return {
-            card_sources: selectedSources,
-            card_types: selectedCardTypes,
-            search_text: '',
-            start_index: null,
-            num_cards: null,
-        };
-    }
+    // editor data
+    const [selectedSourcesEditor, setSelectedSourcesEditor] = useState<CardSource[]>([]);
+
 
     const createFilterListing = () => {
         return {
@@ -59,7 +53,8 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
 
     useEffect(() => {
         // clear selected sources on sources change
-        setSelectedSources([]);
+        setSelectedSourcesListing([]);
+        setSelectedSourcesEditor([]);
     }, [sources]);
 
     const addCard = async (cardData: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
@@ -89,9 +84,11 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
             if (cardInput.card_id)
             {
                 await editCard(cardInput);
+                // TODO: Update edit method to handle updating sources
             } else
             {
                 await addCard(cardInput);
+                // same for add method - update to handle setting sources when creating the card
             }
             setCardInput(null);
         }
@@ -166,31 +163,6 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
                     {/* Card Editor Section */}
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: '20em' }}>
                         <div style={{ border: "1px solid grey", padding: "0.5em", borderRadius: "0.5em", marginBottom: "0.5em" }}>
-                            <b>Select sources</b>
-                            <Select
-                                isMulti
-                                options={sources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
-                                value={selectedSources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
-                                onChange={(selected) => setSelectedSources(selected.map((source) => source.value))}
-                                className='react-select'
-                            />
-                            <b>Select card types</b>
-                            <Select<CardTypeOption, true>
-                                isMulti
-                                options={[
-                                    { value: CardType.KANJI, label: 'Kanji' },
-                                    { value: CardType.VOCABULARY, label: 'Vocabulary' },
-                                    { value: CardType.RADICAL, label: 'Radical' },
-                                    { value: CardType.MULTI_CARD, label: 'Multi Card' },
-                                    { value: CardType.QUESTION, label: 'Custom Question' },
-                                ]}
-                                value={selectedCardTypes.map((type) => ({ value: type, label: type }))}
-                                onChange={(selected) => setSelectedCardTypes(selected.map((type) => type.value))}
-                                className='react-select'
-                            />
-
-                        </div>
-                        <div style={{ border: "1px solid grey", padding: "0.5em", borderRadius: "0.5em", marginBottom: "0.5em" }}>
                             <h3 style={{ margin: "0 0", padding: "0.5em 0" }}>Card Editor</h3>
                             <div style={{ padding: "1%" }}>
                                 <select value={cardType} onChange={(e) => setCardType(e.target.value as any)} className='react-select'>
@@ -204,6 +176,14 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
                                 {cardInput && (
                                     <div>
                                         {getEntryComponent(cardInput, setCardInputValidated)}
+                                        <b>Select sources</b>
+                                        <Select
+                                            isMulti
+                                            options={sources.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                                            value={selectedSourcesEditor.map((source) => ({ value: source, label: getSourceLabel(source.source_id) }))}
+                                            onChange={(selected) => setSelectedSourcesEditor(selected.map((source) => source.value))}
+                                            className='react-select'
+                                        />
                                         <button onClick={saveCard}>Save Card</button>
                                     </div>
                                 )}
