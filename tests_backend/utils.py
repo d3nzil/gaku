@@ -25,7 +25,7 @@ class TestSetup:
     dictionary_file = TEST_DATA / "dictionary.db"
 
     @pytest.fixture(autouse=True)
-    def setup_teardown(self) -> Generator:
+    def _00_setup_teardown(self) -> Generator:
         """Sets up the test environment and tears it down after test ends."""
         self.tempdir = Path(tempfile.mkdtemp())
 
