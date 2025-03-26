@@ -1,5 +1,7 @@
 """Data for tests."""
 
+from pathlib import Path
+
 from gaku.card_types import (
     VocabCard,
     KanjiCard,
@@ -10,6 +12,12 @@ from gaku.card_types import (
     OnomatopoeiaDefinition,
 )
 
+IMPORT_LIST = (
+    Path(__file__).parent.parent
+    / "vocab-text"
+    / "manga"
+    / "Ranma ½ - Book 1, Part 1.txt"
+)
 
 VOCAB_CARD = VocabCard(
     card_id="vocab000-0feb-46fe-9a3d-5f1d81544bb8",
