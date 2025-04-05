@@ -9,12 +9,14 @@ from .db_schema import (
     TestCardsTable,
     FSRSTable,
     RecentMistakesTable,
+    CardSourceLinkTable,
 )
 from .db_sources import SourceManager
 from .db_fsrs import FSRSManager
 from .db_test_data import TestEntryManager
 from .db_recent_mistakes import MistakesManager
 
+from .. import card_types
 from ..card_types import (
     TestCardTypes,
 )
@@ -169,3 +171,30 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
                 filter,
             )
             return self.generate_cards_from_scalar(session.scalars(cards_select))
+
+    def set_source_links_for_card(
+        self, card_id: str, set_sources: list[card_types.CardSource]
+    ) -> None:
+        """Sets sources for card. Removes and adds sources as needed."""
+        existing_sources: set[card_types.CardSource] = set(
+            self.get_sources_for_card(card_id)
+        )
+        extra_sources = existing_sources - set(set_sources)
+        new_sources = set(set_sources) - existing_sources
+
+        with Session(self.engine) as session:
+            for source in extra_sources:
+                card_to_delete = (
+                    session.query(CardSourceLinkTable)
+                    .filter(CardSourceLinkTable.card_id == card_id)
+                    .filter(CardSourceLinkTable.source_id == source.source_id)
+                    .first()
+                )
+                if card_to_delete is None:
+                    raise ValueError(
+                        f"Link not for card: {card_id}, source: {source.source_id}"
+                    )
+                session.delete(card_to_delete)
+
+            for new_source in new_sources:
+                self.add_card_source_link(card_id, new_source.source_id)
