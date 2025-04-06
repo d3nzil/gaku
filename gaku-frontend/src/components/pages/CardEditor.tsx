@@ -68,7 +68,7 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
         return response;
     };
 
-    const editCard = async (updatedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
+    const saveChangedCard = async (updatedCard: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
         const response = await api.updateCard({ card: updatedCard });
         if (response.status === "ok")
         {
@@ -83,7 +83,7 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
         {
             if (cardInput.card_id)
             {
-                await editCard(cardInput);
+                await saveChangedCard(cardInput);
                 // TODO: Update edit method to handle updating sources
             } else
             {
@@ -96,6 +96,16 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
 
     const newCard = () => {
         setCardInput(createNewCard(cardType));
+    };
+
+    const editCard = async (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
+        const edit_card = await api.getCardById(card.card_id);
+        if (edit_card != null)
+        {
+
+            setCardInputValidated(edit_card);
+            api.getSourcesByCardId(edit_card.card_id).then(setSelectedSourcesEditor)
+        }
     };
 
 
@@ -222,7 +232,7 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
                                     {getEntryComponent(card, () => { })}
 
                                     {isEditableType(card) &&
-                                        <button onClick={() => setCardInput(card)}>Edit</button>
+                                        <button onClick={() => editCard(card)}>Edit</button>
                                     }
                                     <button onClick={() => deleteCard(card)}>Delete</button>
                                     <br /><br />

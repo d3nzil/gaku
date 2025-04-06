@@ -19,6 +19,9 @@ const deleteCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry
 const getCardsByText = (filter: CardFilter): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
     axios.post(`${apiUrl}/cards/get_by_text`, filter).then((response) => response.data);
 
+const getCardById = (card_id: string): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard | null)> =>
+    axios.post(`${apiUrl}/cards/get_by_id`, { card_id }).then((response) => response.data);
+
 // card source API methods
 const getSources = (): Promise<CardSource[]> =>
     axios.get(`${apiUrl}/sources`).then((response) => response.data);
@@ -31,6 +34,11 @@ const updateSource = (source: CardSource): Promise<{ status: string }> =>
 
 const deleteSource = (source: CardSource): Promise<{ status: string }> =>
     axios.post(`${apiUrl}/sources/delete`, source).then((response) => response.data);
+
+const getSourcesByCardId = (card_id: string): Promise<CardSource[]> =>
+    axios.post(`${apiUrl}/sources/get_sources_by_id`, { card_id }).then((response) => response.data);
+
+
 
 // card source link API methods
 const addCardSourceLink = (card_id: string, source_id: string): Promise<{ status: string }> =>
@@ -86,6 +94,7 @@ export default {
     updateCard,
     deleteCard,
     getCardsByText,
+    getCardById,
     startTestAll,
     startTestNew,
     startTestStudied,
@@ -102,6 +111,7 @@ export default {
     getTestResults,
     getTestStatus,
     getSources,
+    getSourcesByCardId,
     addSource,
     updateSource,
     deleteSource,
