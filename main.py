@@ -191,6 +191,20 @@ async def get_cards_by_text(
     return cards
 
 
+@api_router.post("/cards/get_by_id")
+async def get_card_by_id(request: dict) -> TestCardTypes | None:
+    """Gets card specified by its card_id."""
+    card = manager.db.get_card_by_card_id(request["card_id"])
+    return card
+
+
+@api_router.post("/sources/get_sources_by_id")
+async def get_card_sources_by_id(request: dict) -> list[CardSource]:
+    """Gets card sources specified by its card_id."""
+    sources = manager.db.get_card_sources(request["card_id"])
+    return sources
+
+
 @api_router.post("/cards/add_source_link")
 async def add_source_link(request: CardSourceLinkRequest) -> dict:
     """Add source link to a card."""
