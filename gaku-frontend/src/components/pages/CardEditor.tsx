@@ -58,7 +58,7 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
     }, [sources]);
 
     const addCard = async (cardData: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | OnomatopoeiaCard) => {
-        const response = await api.addCard(cardData);
+        const response = await api.addCard({ card: cardData });
         if (response.status === "ok")
         {
             const filter = createFilterListing()
@@ -90,7 +90,9 @@ const CardEditor = ({ sources }: CardSourcesProps,) => {
                 await addCard(cardInput);
                 // same for add method - update to handle setting sources when creating the card
             }
+            await api.setCardSourceLinks(cardInput.card_id, selectedSourcesEditor);
             setCardInput(null);
+            setSelectedSourcesEditor([]);
         }
     };
 

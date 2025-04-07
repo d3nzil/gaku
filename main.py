@@ -102,6 +102,13 @@ class CardSourceLinkRequest(BaseModel):
     source_id: str
 
 
+class CardSourceLinkUpdate(BaseModel):
+    """Mapping for updating card sources."""
+
+    card_id: str
+    sources: list[CardSource]
+
+
 # High level structure
 # - card editor
 # - test session
@@ -210,6 +217,19 @@ async def add_source_link(request: CardSourceLinkRequest) -> dict:
     """Add source link to a card."""
     manager.db.add_card_source_link(request.card_id, request.source_id)
     logging.info(f"Added source link: {request.card_id} - {request.source_id}")
+    return {"status": "ok"}
+
+
+@api_router.post("/cards/set_source_links")
+async def set_source_link(request: CardSourceLinkUpdate) -> dict:
+    """Sets source links for a card."""
+    logging.info(f"Setting card sources for: {request.card_id}")
+    try:
+        manager.db.set_source_links_for_card(request.card_id, request.sources)
+    except:
+        logging.exception("Error setting sources")
+        raise
+    logging.info(f"Set source links: {request.card_id} - {request.sources}")
     return {"status": "ok"}
 
 

@@ -44,6 +44,9 @@ const getSourcesByCardId = (card_id: string): Promise<CardSource[]> =>
 const addCardSourceLink = (card_id: string, source_id: string): Promise<{ status: string }> =>
     axios.post(`${apiUrl}/cards/add_source_link`, { card_id, source_id }).then((response) => response.data);
 
+const setCardSourceLinks = (card_id: string, sources: CardSource[]): Promise<{ status: string }> =>
+    axios.post(`${apiUrl}/cards/set_source_links`, { card_id, sources }).then((response) => response.data);
+
 const deleteAllCardSourceLinks = (card_id: string): Promise<{ status: string }> =>
     axios.post(`${apiUrl}/cards/delete_all_source_links`, { card_id }).then((response) => response.data);
 
@@ -113,6 +116,7 @@ export default {
     getSources,
     getSourcesByCardId,
     addSource,
+    setCardSourceLinks,
     updateSource,
     deleteSource,
     addCardSourceLink,
