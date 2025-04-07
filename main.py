@@ -132,7 +132,7 @@ async def get_cards(filter: CardFilter) -> list[TestCardTypes]:
 
 
 @api_router.post("/cards/add")
-async def add_card(card: dict) -> dict:
+async def add_card(create_request: api_types.CardChangeRequest) -> dict:
     """Add card.
 
     Parameters
@@ -145,6 +145,7 @@ async def add_card(card: dict) -> dict:
     dict
         Dictionary with status and card_id fields.
     """
+    card = create_request.card
     if "card_id" in card and card["card_id"] != "":
         raise HTTPException(
             status_code=400, detail="ID should not be provided for new card"
@@ -157,7 +158,7 @@ async def add_card(card: dict) -> dict:
 
 
 @api_router.post("/cards/update")
-async def edit_card(update: api_types.CardUpdateRequest) -> dict:
+async def edit_card(update_request: api_types.CardChangeRequest) -> dict:
     """Edit card.
 
     Parameters
@@ -170,10 +171,10 @@ async def edit_card(update: api_types.CardUpdateRequest) -> dict:
     dict
         Dictionary with status field.
     """
-    card = update.card
+    card = update_request.card
     updated_card = create_card_from_json(card)
     manager.db.update_card(updated_card)
-    if update.reset_fsrs:
+    if update_request.reset_fsrs:
         manager.db.delete_card_fsrs(updated_card.card_id)
     logging.info(f"Updated card: {updated_card}")
     return {"status": "ok"}

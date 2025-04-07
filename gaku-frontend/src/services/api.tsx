@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard, AnswerCheckResponse, UpdateCardRequest } from '../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard, AnswerCheckResponse, CardChangeRequest } from '../types/CardTypes';
 
 const apiUrl = import.meta.env.VITE_APP_API_URL as string || "http://localhost:8000/api";
 
@@ -7,10 +7,10 @@ const apiUrl = import.meta.env.VITE_APP_API_URL as string || "http://localhost:8
 const getCards = (filter: CardFilter): Promise<(VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard)[]> =>
     axios.post(`${apiUrl}/cards`, filter).then((response) => response.data);
 
-const addCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): Promise<any> =>
-    axios.post(`${apiUrl}/cards/add`, card).then((response) => response.data);
+const addCard = (create_request: CardChangeRequest): Promise<any> =>
+    axios.post(`${apiUrl}/cards/add`, create_request).then((response) => response.data);
 
-const updateCard = (update_request: UpdateCardRequest): Promise<any> =>
+const updateCard = (update_request: CardChangeRequest): Promise<any> =>
     axios.post(`${apiUrl}/cards/update`, update_request).then((response) => response.data);
 
 const deleteCard = (card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard): Promise<any> =>

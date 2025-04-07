@@ -219,9 +219,10 @@ interface AnswerCheckResponse {
     mistakes: { [key: string]: string[] }
 }
 
-interface UpdateCardRequest {
+interface CardChangeRequest {
     card: VocabEntry | KanjiEntry | RadicalEntry | QuestionEntry | MultiCardEntry | OnomatopoeiaCard
     reset_fsrs?: boolean
+    sources?: CardSource[]
 }
 
 
@@ -256,7 +257,7 @@ export type {
     StartTestRequest,
     TestResults,
     AnswerCheckResponse,
-    UpdateCardRequest,
+    CardChangeRequest,
     CardSourcesProps,
 };
 
