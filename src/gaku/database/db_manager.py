@@ -1,5 +1,6 @@
 """Database functionality for learning data."""
 
+import logging
 from datetime import datetime, timezone, timedelta
 
 from sqlalchemy import select, func
@@ -176,25 +177,36 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
         self, card_id: str, set_sources: list[card_types.CardSource]
     ) -> None:
         """Sets sources for card. Removes and adds sources as needed."""
-        existing_sources: set[card_types.CardSource] = set(
-            self.get_sources_for_card(card_id)
+        existing_sources_ids: set[str] = set(
+            [old_source.source_id for old_source in self.get_sources_for_card(card_id)]
         )
-        extra_sources = existing_sources - set(set_sources)
-        new_sources = set(set_sources) - existing_sources
+        new_sources_ids = set([new_source.source_id for new_source in set_sources])
+        extra_sources = existing_sources_ids - new_sources_ids
+        new_sources = new_sources_ids - existing_sources_ids
 
         with Session(self.engine) as session:
-            for source in extra_sources:
+            for source_id in extra_sources:
                 card_to_delete = (
                     session.query(CardSourceLinkTable)
                     .filter(CardSourceLinkTable.card_id == card_id)
-                    .filter(CardSourceLinkTable.source_id == source.source_id)
+                    .filter(CardSourceLinkTable.source_id == source_id)
                     .first()
                 )
                 if card_to_delete is None:
                     raise ValueError(
-                        f"Link not for card: {card_id}, source: {source.source_id}"
+                        f"Link not for card: {card_id}, source: {source_id}"
                     )
-                session.delete(card_to_delete)
 
-            for new_source in new_sources:
-                self.add_card_source_link(card_id, new_source.source_id)
+                try:
+                    logging.debug(f"Deleting source {source_id} for card {card_id}")
+                    session.delete(card_to_delete)
+                except:
+                    logging.warning(
+                        f"Could not find source {source_id} for card {card_id}"
+                    )
+
+            for new_source_id in new_sources:
+                logging.debug(f"Adding source {source_id} for card {card_id}")
+                self.add_card_source_link(card_id, new_source_id)
+
+            session.commit()
