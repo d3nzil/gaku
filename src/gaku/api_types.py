@@ -152,8 +152,9 @@ class AnswerCheckResponse(BaseModel):
     mistakes: dict[str, list[str]]
 
 
-class CardUpdateRequest(BaseModel):
-    """Request to change stored card."""
+class CardChangeRequest(BaseModel):
+    """Request to create or change a card."""
 
     card: dict
     reset_fsrs: bool = False
+    sources: Optional[list[CardSource]] = None

@@ -114,7 +114,7 @@ const MultiCardEditor = ({ sources }: CardSourcesProps) => {
                 await api.updateCard({ card: currentMultiCard });
             } else
             {
-                const response = await api.addCard(currentMultiCard);
+                const response = await api.addCard({ card: currentMultiCard });
                 currentMultiCard.card_id = response.card_id;
             }
             // Update card sources
