@@ -4,11 +4,11 @@
 To see detailed guide for one of the steps, click on it.
 
 - [Creating sources](./use-guide/sources.md) 
-    - create source in the `Sources` section for the vocabulary
+    - create source in the `Card Manager` - `Sources` section for the vocabulary
 - [Creating vocabulary list](./use-guide/create_wordlist.md) 
     - write a list of vocabulary, one word per line, dictionary form - [Jisho.org](https://jisho.org) is your friend
 - [Importing vocabulary](./use-guide/import_vocab.md) 
-    - paste the vocabulary into the text field on import, click `Generate Imports`, wait a bit for the cards to be created
+    - paste the vocabulary into the text field in `Card Manager` - `Import`, click `Generate Imports`, wait a bit for the cards to be created
     - [Cards](cards.md) - review the generated cards
     - once you are happy, select the desired source for the cards and click the `Import cards` button
 - Study
