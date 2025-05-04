@@ -206,7 +206,7 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
                     )
 
             for new_source_id in new_sources:
-                logging.debug(f"Adding source {source_id} for card {card_id}")
+                logging.debug(f"Adding source {new_source_id} for card {card_id}")
                 self.add_card_source_link(card_id, new_source_id)
 
             session.commit()
