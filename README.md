@@ -60,6 +60,9 @@ Enter address http://localhost:8000 in your browser (Firefox, Chrome...) and you
 Note that when developing Gaku and running the frontend using `npm run dev`, the address changes to http://localhost:3000
 
 ### Updating Gaku to newer versions
+**2025-05-04**
+The card editing functionality was moved into `Card Manager`
+
 **2025-03-15**
 Starting from this version Gaku will now automatically update the user data database. If you downloaded and used Gaku before this version, make sure that **before** updating to this version, you run the `alembic upgrade head` command to ensure the database is versioned. Otherwise, Gaku will attempt to upgrade your database and fail to run.
 

@@ -18,7 +18,7 @@ Multicard is a special type of card, that is not created during import and inste
 
 What this type of card does is, that it shows multiple questions of same type next to each other. The purpose being that if there is Kanji or word that you mistake for each other, to show them together, so you can see the differences and better remember them.
 
-Clicking on the "Multi Card" in the top menu will show you the Multicard editor. If no Multicard is selected, you can either create a new one or search for existing one.
+Clicking on the `Multi Card` in `Card Manager` section of the top menu will show you the Multicard editor. If no Multicard is selected, you can either create a new one or search for existing one.
 
 Before creating a new one, you need to select one of the supported types of Multicard: Vocab, Kanji or Radical. Once you select the Multicard type, click the `New Multi Card` button and the editor switches to edit mode then you will be able to search and add the selected type of card to the multicard as the search below switches from Multicard search to searching selected type of card.
 

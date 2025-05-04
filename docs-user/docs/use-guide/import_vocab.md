@@ -4,7 +4,7 @@ Importing is a way to get vocabulary and other learning data into Gaku, so they 
 # Importing vocabulary
 Before importing new vocabulary, it is best to have a Source created, as described above.
 
-To import a wordlist, go to import section. In there you have two options - if you have a wordlist created as described in previous section, you can just load file using the browse button. After that the contents of the file should appear in the box below.
+To import a wordlist, go to `Card Manager` - `Import` section. In there you have two options - if you have a wordlist created as described in previous section, you can just load file using the browse button. After that the contents of the file should appear in the box below.
 
 Alternatively you can copy the wordlist and paste it in the box below the browse button.
 
