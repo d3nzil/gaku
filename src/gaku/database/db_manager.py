@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from .db_schema import (
     TestCardsTable,
@@ -200,9 +201,9 @@ class DbManager(SourceManager, FSRSManager, TestEntryManager, MistakesManager):
                 try:
                     logging.debug(f"Deleting source {source_id} for card {card_id}")
                     session.delete(card_to_delete)
-                except:
+                except SQLAlchemyError as e:
                     logging.warning(
-                        f"Could not find source {source_id} for card {card_id}"
+                        f"Could not find source {source_id} for card {card_id}: {e}"
                     )
 
             for new_source_id in new_sources:
