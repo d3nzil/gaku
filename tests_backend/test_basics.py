@@ -632,3 +632,54 @@ class TestBasics(TestSetup):
         assert fsrs_card is not None
         logging.info(f"FSRS data after completed test: {fsrs_card.to_dict()}")
         assert isinstance(fsrs_card, fsrs.Card)
+
+    def test_set_source_links_for_card(self) -> None:
+        """Veriffies that sources for a card can be changed."""
+
+        # import card
+        test_ono = "あっはっはっはっ"
+        manager = self.manager
+        db = manager.db
+
+        generated_imports = manager.generate_onomatopoeia_import(test_ono)
+        logging.info(f"Generated cards for {test_ono} are: {generated_imports}")
+        manager.import_cards(generated_imports, sources=[])
+        cards = manager.db.get_cards_any_state()
+        assert len(cards) == 1
+        test_card = cards[0]
+
+        # create sources
+        source_a = gaku.api_types.CardSource(source_name="Source A")
+        logging.warning(source_a)
+        source_b = gaku.api_types.CardSource(source_name="Source B")
+        logging.info(source_b)
+        manager.db.add_card_source(source_a)
+        manager.db.add_card_source(source_b)
+
+        logging.info("Verify source add")
+        manager.db.set_source_links_for_card(test_card.card_id, [source_a])
+        card_sources = db.get_sources_for_card(test_card.card_id)
+        assert card_sources == [source_a]
+
+        logging.info("Verify sources unchanged")
+        manager.db.set_source_links_for_card(test_card.card_id, [source_a])
+        card_sources = db.get_sources_for_card(test_card.card_id)
+        assert card_sources == [source_a]
+
+        logging.info("Verify source switch")
+        manager.db.set_source_links_for_card(test_card.card_id, [source_b])
+        card_sources = db.get_sources_for_card(test_card.card_id)
+        assert card_sources == [source_b]
+
+        logging.info("Verify source remove")
+        manager.db.set_source_links_for_card(test_card.card_id, [])
+        card_sources = db.get_sources_for_card(test_card.card_id)
+        assert card_sources == []
+
+        logging.info("Verify source add multiple")
+        manager.db.set_source_links_for_card(test_card.card_id, [source_a, source_b])
+        card_sources = db.get_sources_for_card(test_card.card_id)
+        assert set([s.source_id for s in card_sources]) == {
+            source_a.source_id,
+            source_b.source_id,
+        }
