@@ -10,6 +10,7 @@ from typing import Optional
 from alembic.config import Config
 from alembic import command
 
+from . import config
 from . import utils
 from . import card_types
 from .database import DbManager
@@ -80,6 +81,12 @@ class GakuManager:
             exit(-1)
 
         self.root_dir = gaku_root_dir
+
+        # setup Gaku configuration
+        self.config_path: Path = self.userdata_dir / "config.json"
+        config.set_config_path(self.config_path)
+        if self.config_path.exists():
+            config.load_config(self.config_path)
 
         self.db_file: Path = self.userdata_dir / "cards.db"
         self.db_connection: str = f"sqlite:///{str(self.db_file.resolve())}"

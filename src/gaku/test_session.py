@@ -29,12 +29,12 @@ ExcludedField = Annotated[T, Field(exclude=True)]
 class QuestionTestData(BaseModel):
     """Data for the question."""
 
-    needs_correct_responses: int = get_config().required_answers
+    needs_correct_responses: int = get_config().num_required_answers
     mistakes: int = 0
 
     def mark_mistake(self) -> None:
         """Add mistake to the question."""
-        self.needs_correct_responses = get_config().repeats_after_mistake + 1
+        self.needs_correct_responses = get_config().num_repeats_after_mistake + 1
         self.mistakes += 1
         logging.info(
             f"Adding mistake to the question, {self.mistakes} mistakes, {self.needs_correct_responses} remaining responses"

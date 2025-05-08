@@ -114,6 +114,9 @@ const SelectTest = () => {
         {
             headerRef.current.scrollIntoView();
         }
+        api.getConfig().then((cfg) => {
+            setNumCardsToStudy(cfg.current.num_default_cards_to_study)
+        })
     }, []);
 
 

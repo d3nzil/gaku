@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import gaku
 from gaku import api_types
 from gaku.api_types import (
     NextCardMessage,
@@ -30,6 +31,7 @@ from gaku.api_types import (
     CardFilter,
     AnswerCheckResponse,
 )
+import gaku.config
 from gaku.gaku_manager import GakuManager
 from gaku.card_types import (
     CardSource,
@@ -640,6 +642,20 @@ async def get_num_recent_mistakes() -> dict[int, int]:
     recent_mistakes = manager.get_num_recent_mistakes()
     logging.info(f"Recent mistakes stats: {recent_mistakes}")
     return recent_mistakes
+
+
+# configuration API
+@api_router.get("/config")
+async def get_configuration() -> api_types.ConfigurationResponse:
+    """Get current Gaku configuration."""
+    message = api_types.ConfigurationResponse(current=gaku.config.get_config())
+    return message
+
+
+@api_router.post("/config")
+async def set_configuration(config: api_types.GakuConfig) -> None:
+    """Updates current configuration."""
+    gaku.config.set_config(config)
 
 
 app.include_router(router=api_router)

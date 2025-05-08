@@ -1,38 +1,27 @@
 """User configuration related functionality."""
 
 import json
+import logging
 from pathlib import Path
 from typing import Optional
 
+from pydantic import BaseModel
 
-class GakuConfig:
+
+CONFIG_PATH: Optional[Path] = None
+
+
+class GakuConfig(BaseModel):
     """Gaku configuration."""
 
-    def __init__(self, config: Optional[dict] = None) -> None:
-        """Initialize Gaku configuration.
-
-        Parameters
-        ----------
-        config : dict
-            Gaku configuration.
-        """
-        if config is None:
-            config = {}
-
-        # test settings
-        self.num_default_cards_to_study: int = config.get(
-            "num_default_cards_to_study", 10
-        )
-        self.num_current_questions: int = config.get("num_current_cards", 7)
-        self.required_answers: int = config.get("required_answers", 1)
-        self.repeats_after_mistake: int = config.get("repeats_after_mistake", 2)
-        self.practice_radicals_for_kanji: bool = config.get(
-            "practice_radicals_for_kanji", True
-        )
-        self.practice_kanji_for_words: bool = config.get(
-            "practice_kanji_for_words", True
-        )
-        self.radicals_test_meaning: bool = config.get("radicals_test_meaning", True)
+    # test settings
+    num_default_cards_to_study: int = 10
+    num_current_questions: int = 7
+    num_required_answers: int = 1
+    num_repeats_after_mistake: int = 2
+    practice_radicals_for_kanji: bool = True
+    practice_kanji_for_words: bool = True
+    radicals_test_meaning: bool = True
 
     def to_json(self) -> dict:
         """Convert Gaku configuration to JSON format.
@@ -42,12 +31,7 @@ class GakuConfig:
         dict
             Gaku configuration in JSON format.
         """
-        return {
-            "required_answers": self.required_answers,
-            "repeats_after_mistake": self.repeats_after_mistake,
-            "practice_radicals_for_kanji": self.practice_radicals_for_kanji,
-            "practice_kanji_for_words": self.practice_kanji_for_words,
-        }
+        return self.model_dump(mode="json")
 
 
 CONFIG: GakuConfig = GakuConfig()
@@ -64,6 +48,32 @@ def get_config() -> GakuConfig:
     return CONFIG
 
 
+def set_config(updated_config: GakuConfig) -> None:
+    """Updates current Gaku configuration.
+
+    Parameters
+    ----------
+    config: GakuConfig
+        The updated configuration
+    """
+    global CONFIG
+    CONFIG = updated_config
+    if CONFIG_PATH is not None:
+        save_config(CONFIG_PATH)
+    else:
+        logging.warning("Config path not set, Gaku configuration will not be saved")
+
+
+def set_config_path(config_path: Path) -> None:
+    """Sets location for the configuration.
+
+    config_path: Path
+        The path to the config file including the filename.
+    """
+    global CONFIG_PATH
+    CONFIG_PATH = config_path
+
+
 def load_config(config_path: Path) -> None:
     """Load Gaku configuration.
 
@@ -74,7 +84,7 @@ def load_config(config_path: Path) -> None:
     """
     global CONFIG
     with open(config_path, "r") as f:
-        CONFIG = GakuConfig(json.load(f))
+        CONFIG = GakuConfig(**json.load(f))
 
 
 def save_config(config_path: Path) -> None:

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard, AnswerCheckResponse, CardChangeRequest } from '../types/CardTypes';
+import { VocabEntry, KanjiEntry, RadicalEntry, QuestionEntry, TestAnswer, CardSource, NextCardMessage, TestStatusMessage, GeneratedImports, CardFilter, MultiCardEntry, StartTestRequest, TestResults, OnomatopoeiaCard, AnswerCheckResponse, CardChangeRequest, ConfigResponse, GakuConfig } from '../types/CardTypes';
 
 const apiUrl = import.meta.env.VITE_APP_API_URL as string || "http://localhost:8000/api";
 
@@ -91,6 +91,10 @@ const importCards = (cards: GeneratedImports, sources: CardSource[]) => axios.po
 const getNumDueStats = (): Promise<{ [key: number]: number }> => axios.get(`${apiUrl}/stats/num_due`).then((response) => response.data);
 const getNumRecentMistakes = (): Promise<{ [key: number]: number }> => axios.get(`${apiUrl}/stats/num_recent_mistakes`).then((response) => response.data);
 
+// configuration
+const getConfig = (): Promise<ConfigResponse> => axios.get(`${apiUrl}/config`).then((response) => response.data);
+const setConfig = (config: GakuConfig) => axios.post(`${apiUrl}/config`, config).then((response) => response.data);
+
 export default {
     getCards,
     addCard,
@@ -133,4 +137,6 @@ export default {
     practiceFailedCards,
     practiceAllCards,
     isPractice,
+    getConfig,
+    setConfig,
 };

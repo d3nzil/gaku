@@ -4,6 +4,7 @@ import TestFlashcards from "./components/pages/TestFlashCards"; // Adjust the pa
 import DisplayResults from "./components/pages/DisplayResults";
 import SelectTest from "./components/pages/SelectTest"; // Adjust the path based on where you saved SelectTest.js
 import CardManager from './components/pages/CardManager';
+import ConfigEditor from './components/pages/Configuration';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<SelectTest />} />
         <Route path="/test" element={<TestFlashcards />} />
         <Route path="/results" element={<DisplayResults />} />
+        <Route path='/config' element={<ConfigEditor />} />
       </Routes>
     </Router>
   );

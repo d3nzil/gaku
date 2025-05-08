@@ -15,6 +15,7 @@ from .card_types import (
     KanjiCard,
     RadicalCard,
 )
+from .config import GakuConfig
 
 
 class AnswerResponseMessage(BaseModel):
@@ -158,3 +159,10 @@ class CardChangeRequest(BaseModel):
     card: dict
     reset_fsrs: bool = False
     sources: Optional[list[CardSource]] = None
+
+
+class ConfigurationResponse(BaseModel):
+    """Current configuration data."""
+
+    current: GakuConfig
+    # default: GakuConfig

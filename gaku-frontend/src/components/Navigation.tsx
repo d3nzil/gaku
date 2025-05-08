@@ -35,6 +35,8 @@ const Navigation = () => {
                     <b> | </b>
                     <Link to="/cardmanager">Card Manager</Link>
                     <b> | </b>
+                    <Link to="/config">Configuration</Link>
+                    <b> | </b>
                     <Link to="/">Select Test</Link>
                     {context.testSessionActive && (<>
                         <b> | </b>

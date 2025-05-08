@@ -232,6 +232,20 @@ interface CardSourcesProps {
 }
 
 
+interface GakuConfig {
+    num_default_cards_to_study: number
+    num_current_questions: number
+    num_required_answers: number
+    num_repeats_after_mistake: number
+    practice_radicals_for_kanji: boolean
+    practice_kanji_for_words: boolean
+    radicals_test_meaning: boolean
+}
+
+interface ConfigResponse {
+    current: GakuConfig
+}
+
 export type {
     VocabEntry,
     AnswerText,
@@ -259,6 +273,8 @@ export type {
     AnswerCheckResponse,
     CardChangeRequest,
     CardSourcesProps,
+    GakuConfig,
+    ConfigResponse,
 };
 
 export {
