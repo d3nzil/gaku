@@ -15,6 +15,7 @@ fsrs>=5,<6
 mypy
 black
 ruff
+types-regex
 
 # for documentation
 # hoping to use sphinx for gaku python package documentation
