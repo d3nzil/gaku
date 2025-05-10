@@ -63,5 +63,9 @@ table {
 
 td,
 th {
-  padding: 0 0.1em;
+  padding: 0 0.25em;
+}
+
+.config-table td {
+  padding-bottom: 0.5em;
 }

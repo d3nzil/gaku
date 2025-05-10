@@ -116,6 +116,7 @@ const SelectTest = () => {
         }
         api.getConfig().then((cfg) => {
             setNumCardsToStudy(cfg.current.num_default_cards_to_study)
+            setGenerateExtraQuestions(cfg.current.generate_extra_questions)
         })
     }, []);
 

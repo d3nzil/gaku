@@ -28,7 +28,7 @@ const ConfigEditor = () => {
                 <h2 style={{ textAlign: "center" }}>Gaku Configuration</h2>
                 {currentConfig ?
                     (<div style={{ flex: "1", display: "flex" }}>
-                        <table>
+                        <table className="config-table">
                             <tbody>
                                 <tr>
                                     <td style={{ paddingRight: "1em" }}>Default number of cards to study:</td>
@@ -37,16 +37,23 @@ const ConfigEditor = () => {
                                 <tr>
                                     <td style={{ paddingRight: "1em" }}>
                                         Number of correct answers required to complete question<br />
-                                        (Initial, if there was no mistake)
+                                        <i>Initial, if there was no mistake</i>
                                     </td>
                                     <td style={{ textAlign: "right" }}><input type="number" min={1} value={currentConfig.num_required_answers} style={{ width: "3em" }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentConfig({ ...currentConfig, num_required_answers: parseInt(e.target.value) })} /></td>
                                 </tr>
                                 <tr>
                                     <td style={{ paddingRight: "1em" }}>
                                         Number of correct answers required after mistake<br />
-                                        (Always set to this value after mistake)
+                                        <i>Always set to this value after mistake)</i>
                                     </td>
                                     <td style={{ textAlign: "right" }}><input type="number" min={1} value={currentConfig.num_repeats_after_mistake} style={{ width: "3em" }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentConfig({ ...currentConfig, num_repeats_after_mistake: parseInt(e.target.value) })} /></td>
+                                </tr>
+                                <tr>
+                                    <td style={{ paddingRight: "1em" }}>
+                                        Generate extra questions<br />
+                                        <i>Tests kanji for vocab and radicals for kanji</i>
+                                    </td>
+                                    <td style={{ textAlign: "right" }}><input type="checkbox" checked={currentConfig.generate_extra_questions} style={{ width: "3em" }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentConfig({ ...currentConfig, generate_extra_questions: e.target.checked })} /></td>
                                 </tr>
                                 {/* <tr>
                                     <td></td>
@@ -61,6 +68,8 @@ const ConfigEditor = () => {
                     </ div>
                     ) : "Loading configuration"}
                 <br />
+                <i>If test is active, it's settings wont't be affected. You will need to start new test to get the updated settings.</i>
+                <br /><br />
                 <button onClick={saveConfig}>Save settings</button>
             </div>
         </div >

@@ -237,8 +237,7 @@ interface GakuConfig {
     num_current_questions: number
     num_required_answers: number
     num_repeats_after_mistake: number
-    practice_radicals_for_kanji: boolean
-    practice_kanji_for_words: boolean
+    generate_extra_questions: boolean
     radicals_test_meaning: boolean
 }
 
