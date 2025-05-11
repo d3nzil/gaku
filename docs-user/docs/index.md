@@ -11,6 +11,7 @@ To see detailed guide for one of the steps, click on it.
     - paste the vocabulary into the text field in `Card Manager` - `Import`, click `Generate Imports`, wait a bit for the cards to be created
     - [Cards](cards.md) - review the generated cards
     - once you are happy, select the desired source for the cards and click the `Import cards` button
+- [Configure Gaku](./use-guide/configuration.md) - optionally, you can change Gaku settings here
 - Study
     - [Select test](./use-guide/test_select.md) - go to the `Select Test` page and start studying
     - [Testing](./use-guide/testing.md) - fill in the answers in testing until you get them all correctly
