@@ -21,6 +21,9 @@ class GakuConfig(BaseModel):
     num_repeats_after_mistake: int = 2
     generate_extra_questions: bool = True
     radicals_test_meaning: bool = True
+    generate_kanji_for_vocab: bool = True
+    generate_radicals_for_kanji: bool = True
+
 
     def to_json(self) -> dict:
         """Convert Gaku configuration to JSON format.

@@ -47,6 +47,7 @@ from .api_types import (
     CardFilter,
     CardSourceLink,
 )
+from .config import get_config
 
 
 class GakuManager:
@@ -597,6 +598,7 @@ class GakuManager:
     ) -> GeneratedImports:
         """Generates Kanji cards for a list."""
         logging.info(f"Generating import for kanji list: {kanji_list}")
+        config = get_config()
         # ids of the generated cards in order and with dependencies
         import_items: list[ImportItem] = []
         generated_cards: dict[
@@ -666,30 +668,31 @@ class GakuManager:
                 generated_cards[kanji_card.card_id] = kanji_card
                 kanji_import_item = ImportItem(item_id=kanji_card.card_id)
 
-                radical_card, new_radical_cards = self.get_radical_card(
-                    kanji_card, generate_radical_cards=True
-                )
-                new_card_ids.extend(new_radical_cards)
-                if not radical_card:
-                    logging.warning(
-                        f"Radical for kanji {kanji} not found in dictionary"
+                if config.generate_radicals_for_kanji:
+                    radical_card, new_radical_cards = self.get_radical_card(
+                        kanji_card, generate_radical_cards=True
                     )
-                    errors.append(f"Radical for kanji {kanji} not found in dictionary")
-                    continue
+                    new_card_ids.extend(new_radical_cards)
+                    if not radical_card:
+                        logging.warning(
+                            f"Radical for kanji {kanji} not found in dictionary"
+                        )
+                        errors.append(f"Radical for kanji {kanji} not found in dictionary")
+                        continue
 
-                # check if the radical is already imported
-                if radical_card.dictionary_id in existing_radiacal_cards:
-                    logging.info(
-                        f"Radical {radical_card.writing} already imported, replacing"
+                    # check if the radical is already imported
+                    if radical_card.dictionary_id in existing_radiacal_cards:
+                        logging.info(
+                            f"Radical {radical_card.writing} already imported, replacing"
+                        )
+                        if radical_card.card_id in new_card_ids:
+                            new_card_ids.remove(radical_card.card_id)
+                        radical_card = existing_radiacal_cards[radical_card.dictionary_id]
+                    else:
+                        generated_cards[radical_card.card_id] = radical_card
+                    kanji_import_item.sub_items.append(
+                        ImportItem(item_id=radical_card.card_id)
                     )
-                    if radical_card.card_id in new_card_ids:
-                        new_card_ids.remove(radical_card.card_id)
-                    radical_card = existing_radiacal_cards[radical_card.dictionary_id]
-                else:
-                    generated_cards[radical_card.card_id] = radical_card
-                kanji_import_item.sub_items.append(
-                    ImportItem(item_id=radical_card.card_id)
-                )
 
                 import_items.append(kanji_import_item)
 
@@ -765,6 +768,7 @@ class GakuManager:
     ) -> GeneratedImports:
         """Generates cards from a vocabulary list."""
         # ids of the generated cards in order and with dependencies
+        config = get_config()
         import_items: list[ImportItem] = []
         generated_cards: dict[
             str, VocabCard | KanjiCard | RadicalCard | card_types.OnomatopoeiaCard
@@ -848,7 +852,7 @@ class GakuManager:
                 vocab_import_item = ImportItem(item_id=vocab_card.card_id)
 
                 existing_cards = list(generated_cards.values())
-                if vocab_card.writing:
+                if vocab_card.writing and config.generate_kanji_for_vocab:
                     generated_kanji_imports = self.generate_kanji_import(
                         vocab_card.writing, existing_cards=existing_cards
                     )
