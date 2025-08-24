@@ -62,7 +62,7 @@ class Answer(BaseModel):
                 required_answers = f", {num_answers_total} answers"
         return required_answers
 
-    def prepare_answer(self, answer_text: str) -> str:
+    def prepare_answer(self, answer_text: str) -> list[str]:
         """Does necessary processing of answer text
         (e.g converting all comma types to same comma).
 
@@ -90,7 +90,9 @@ class Answer(BaseModel):
 
         # not stripping text, since it might need to be split first
 
-        return answer_text
+        answers =  answer_text.split(",")
+        logging.warning(f"prepare answer: {answers}")
+        return answers
 
     def get_required_answers(self) -> list[str]:
         """Creates a list of required answers
@@ -104,7 +106,7 @@ class Answer(BaseModel):
         required_answers: list[str] = []
         for answer in self.answers:
             if answer.required:
-                required_answers.append(self.prepare_answer(answer.answer_text))
+                required_answers.extend(self.prepare_answer(answer.answer_text))
 
         return required_answers
 
@@ -130,9 +132,9 @@ class Answer(BaseModel):
             return False, []
 
         user_answer = user_answers[self.answer_id]
-        user_answer = self.prepare_answer(user_answer)
+        user_answer_lst = self.prepare_answer(user_answer)
         # if there is comma in the user's answer, split it and check each part
-        received_answers = set([answer.strip() for answer in user_answer.split(",")])
+        received_answers = set([answer.strip() for answer in user_answer_lst])
         logging.info(f"Processed received answers: {received_answers}")
 
         # if the type is ROMAJI, we need to preprocess the answer
@@ -140,7 +142,7 @@ class Answer(BaseModel):
             logging.debug("Processing Romaji answer type")
             # create a set of correct answers
             expected_answers = set(
-                [self.prepare_answer(answer.answer_text) for answer in self.answers]
+                [a.strip() for answer in self.answers for a in self.prepare_answer(answer.answer_text) ]
             )
             required_answers = set(self.get_required_answers())
 
@@ -158,7 +160,7 @@ class Answer(BaseModel):
             ]
             expected_answers.update(no_paren_answers)
             required_answers.update(no_paren_required_answers)
-            logging.debug(f"Accepted answers - paren: {expected_answers}")
+            logging.warning(f"Accepted answers - paren: {expected_answers}")
             logging.debug(f"Required answers - paren: {required_answers}")
 
             remove_suffixes = ["..."]
@@ -166,8 +168,9 @@ class Answer(BaseModel):
             for suffix in remove_suffixes:
                 for answer_text in expected_answers:
                     if answer_text.endswith(suffix):
+                        logging.warning(f"Removing suffix for: {answer_text}")
                         no_suffix_answers.append(answer_text[0 : -len(suffix)].strip())
-                        break
+                        
             expected_answers.update(no_suffix_answers)
 
             no_suffix_required_answers = []
@@ -177,9 +180,9 @@ class Answer(BaseModel):
                         no_suffix_required_answers.append(
                             answer_text[0 : -len(suffix)].strip()
                         )
-                        break
+                        
             required_answers.update(no_suffix_required_answers)
-            logging.debug(f"Accepted answers - suffix: {expected_answers}")
+            logging.warning(f"Accepted answers - suffix: {expected_answers}")
             logging.debug(f"Required answers - suffix: {required_answers}")
 
         else:
@@ -191,8 +194,8 @@ class Answer(BaseModel):
             # but should not be necessary here as we are comparing kana
             expected_answers = set()
             for answer in self.answers:
-                answer_text = self.prepare_answer(answer.answer_text)
-                expected_answers.update([answer_text.casefold()])
+                answer_text_lst = self.prepare_answer(answer.answer_text)
+                expected_answers.update([answer_text.casefold() for answer_text in answer_text_lst])
 
             required_answers = set(self.get_required_answers())
 

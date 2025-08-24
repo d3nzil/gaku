@@ -7,7 +7,9 @@ import gaku.api_types
 import gaku.database
 import gaku.card_types
 import gaku.question
+from gaku.card_types import VocabCard
 
+import pytest
 from .utils import TestSetup, get_answer_for_question
 
 
@@ -67,3 +69,51 @@ class TestAnswering(TestSetup):
 
         result = test.answer_question(answers)
         assert result.all_correct is True
+
+
+    def test_answering_得る(self) -> None:
+        """Verifies that vocab card with one dictionary entry is
+        generated correctly.
+        """
+        test_vocab = "得る"
+        manager = self.manager
+
+        generated_imports = manager.generate_vocab_import([test_vocab])
+        logging.info(f"Generated cards for {test_vocab} are: {generated_imports}")
+        vocab_cards = [
+            card
+            for card in generated_imports.generated_cards.values()
+            if isinstance(card, VocabCard)
+        ]
+        logging.debug(f"Vocab cards: {vocab_cards}")
+        assert len(vocab_cards) == 2
+        for c in vocab_cards:
+            if c.dictionary_id == 1588760:
+                card = c
+                break
+        else:
+            pytest.fail("No matching card found")
+        manager.db.add_cards([card])
+
+        test_setup = gaku.api_types.StartTestRequest()
+
+        logging.info("Validating answer with ...")
+        manager.start_test_session_new_cards(test_setup)
+        test = manager.test_session
+        assert isinstance(test, gaku.test_session.TestSession)
+
+        while True:
+            question = test.get_test_question()
+            assert isinstance(question, gaku.api_types.NextCardMessage)
+            if question.next_question is None:
+                break
+            logging.warning(question.next_question)
+            answers = get_answer_for_question(question)
+            logging.warning(answers)
+            result = test.answer_question(answers)
+            logging.warning(f"Answer response {result}")
+            assert result.all_correct
+
+        assert result.all_correct is True
+
+
