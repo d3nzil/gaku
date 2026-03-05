@@ -32,6 +32,11 @@ TestAnswer = dict[str, str]
 """
 
 
+def split_answer(text: str) -> list[str]:
+    """Splits answer by comma, skipping commas in brackets."""
+    return re.split(r",\s*(?![^()]*\))", text)
+
+
 class Answer(BaseModel):
     """Answer for the test card."""
 
@@ -90,7 +95,8 @@ class Answer(BaseModel):
 
         # not stripping text, since it might need to be split first
 
-        answers =  answer_text.split(",")
+        # only split when the comma is not inside brackets
+        answers = split_answer(answer_text)
         logging.warning(f"prepare answer: {answers}")
         return answers
 
@@ -142,7 +148,11 @@ class Answer(BaseModel):
             logging.debug("Processing Romaji answer type")
             # create a set of correct answers
             expected_answers = set(
-                [a.strip() for answer in self.answers for a in self.prepare_answer(answer.answer_text) ]
+                [
+                    a.strip()
+                    for answer in self.answers
+                    for a in self.prepare_answer(answer.answer_text)
+                ]
             )
             required_answers = set(self.get_required_answers())
 
@@ -170,7 +180,7 @@ class Answer(BaseModel):
                     if answer_text.endswith(suffix):
                         logging.warning(f"Removing suffix for: {answer_text}")
                         no_suffix_answers.append(answer_text[0 : -len(suffix)].strip())
-                        
+
             expected_answers.update(no_suffix_answers)
 
             no_suffix_required_answers = []
@@ -180,7 +190,7 @@ class Answer(BaseModel):
                         no_suffix_required_answers.append(
                             answer_text[0 : -len(suffix)].strip()
                         )
-                        
+
             required_answers.update(no_suffix_required_answers)
             logging.warning(f"Accepted answers - suffix: {expected_answers}")
             logging.debug(f"Required answers - suffix: {required_answers}")
@@ -195,12 +205,14 @@ class Answer(BaseModel):
             expected_answers = set()
             for answer in self.answers:
                 answer_text_lst = self.prepare_answer(answer.answer_text)
-                expected_answers.update([answer_text.casefold() for answer_text in answer_text_lst])
+                expected_answers.update(
+                    [answer_text.casefold() for answer_text in answer_text_lst]
+                )
 
             required_answers = set(self.get_required_answers())
 
         # validate there were no duplicate answers
-        if len(received_answers) != len(user_answer.split(",")):
+        if len(received_answers) != len(split_answer(user_answer)):
             logging.info("Duplicate answers")
             return False, list(received_answers - expected_answers)
 
